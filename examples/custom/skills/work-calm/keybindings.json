@@ -1,0 +1,6 @@
+{
+  "bindings": [
+    { "command": "skein:next-space", "key": "]", "modifiers": ["accel", "alt"] },
+    { "command": "skein:previous-space", "key": "[", "modifiers": ["accel", "alt"] }
+  ]
+}

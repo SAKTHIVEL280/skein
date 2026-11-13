@@ -1,0 +1,3 @@
+category browser-first-window-ready moz-src:///browser/components/skein/SkeinGlue.sys.mjs SkeinGlue.browserFirstWindowReady
+category browser-window-delayed-startup moz-src:///browser/components/skein/SkeinGlue.sys.mjs SkeinGlue.browserWindowDelayedStartup
+category browser-window-unload moz-src:///browser/components/skein/SkeinGlue.sys.mjs SkeinGlue.browserWindowUnload

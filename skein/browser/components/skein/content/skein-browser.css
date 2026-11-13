@@ -1,0 +1,116 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Built-in Skein styles for the browser window. Trusted: not a skill. */
+
+/* Space switcher */
+
+#skein-spaces-widget {
+  align-items: center;
+  gap: 2px;
+  margin-inline: 2px 6px;
+}
+
+.skein-spaces-list {
+  align-items: center;
+  gap: 4px;
+}
+
+.skein-space-button {
+  appearance: none;
+  min-width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0 4px;
+  border-radius: 12px;
+  border: 2px solid var(--skein-space-color, currentColor);
+  background-color: transparent;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  justify-content: center;
+
+  &[show-label] {
+    padding-inline: 8px;
+  }
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--skein-space-color, currentColor) 25%, transparent);
+  }
+
+  &[selected] {
+    background-color: var(--skein-space-color, currentColor);
+    color: #15141a;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  > .toolbarbutton-icon {
+    display: none;
+  }
+
+  > .toolbarbutton-text {
+    display: block;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+}
+
+.skein-space-add {
+  > .toolbarbutton-icon {
+    display: none;
+  }
+
+  > .toolbarbutton-text {
+    display: block;
+    font-size: 14px;
+    min-width: 12px;
+    text-align: center;
+  }
+}
+
+tab-group[skein-space-hidden] {
+  display: none;
+}
+
+/* Layout: navigation toolbox at the bottom of the window */
+
+@media -moz-pref("skein.layout.toolbar.position", "bottom") {
+  :root:not([inFullscreen], [privatebrowsingmode]) #navigator-toolbox {
+    order: 2;
+    border-bottom: none;
+    border-top: 1px solid var(--chrome-content-separator-color);
+  }
+}
+
+/* Privacy indicator (private and Privacy-mode windows only) */
+
+#skein-privacy-indicator {
+  align-self: center;
+  margin-inline: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  background-color: #b3261e;
+  color: #ffffff;
+
+  &[protected] {
+    background-color: #1b6e3c;
+  }
+}
+
+@media -moz-pref("skein.layout.toolbar.position", "bottom") {
+  /* The address bar results open upward when the toolbar is at the bottom. */
+  :root:not([inFullscreen], [privatebrowsingmode]) .urlbar[breakout][breakout-extend][open] {
+    display: flex;
+    flex-direction: column-reverse;
+    translate: 0 calc(-100% + var(--urlbar-height));
+  }
+}

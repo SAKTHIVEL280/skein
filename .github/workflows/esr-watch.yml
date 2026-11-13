@@ -1,0 +1,62 @@
+name: ESR watch
+
+# Weekly: is there a newer Firefox ESR than the one Skein is based on? If so,
+# check whether the patches still apply and the stable surface survived, and
+# open an issue with the report. Never merges or releases anything: a person
+# reviews every update (browser updates are security-critical).
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Compare versions
+        id: v
+        run: |
+          LATEST=$(curl -fsS https://product-details.mozilla.org/1.0/firefox_versions.json | jq -r .FIREFOX_ESR)
+          BASE=$(grep -oE 'BASE_VERSION = "[^"]+"' skein/browser/components/skein/SkeinSurface.sys.mjs | cut -d'"' -f2)
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "tag=FIREFOX_$(echo "$LATEST" | tr . _)_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "Latest ESR: $LATEST, Skein base: $BASE"
+      - name: Check the new release
+        if: steps.v.outputs.latest != steps.v.outputs.base
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LATEST: ${{ steps.v.outputs.latest }}
+          BASE: ${{ steps.v.outputs.base }}
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          TITLE="Firefox ESR $LATEST is out (Skein is on $BASE)"
+          if gh issue list --state open --search "\"$TITLE\" in:title" --json number | jq -e 'length > 0' >/dev/null; then
+            echo "Issue already open."; exit 0
+          fi
+          sudo apt-get update && sudo apt-get install -y ripgrep
+          git clone --depth 1 --filter=blob:none --sparse --branch "$TAG" https://github.com/mozilla-firefox/firefox engine
+          git -C engine sparse-checkout set browser/base browser/components browser/themes browser/app/profile browser/branding toolkit/themes/shared toolkit/content toolkit/components/prompts modules/libpref/init
+          {
+            echo "A newer Firefox ESR is available. Security fixes reach Skein users only after this is merged, built, tested and released by a person. Process: \`PATCHES.md\`, \"Rebasing onto a new ESR release\"."
+            echo
+            echo "### Patches"
+            for p in patches/*.patch; do
+              if git -C engine apply --check "../$p" 2>/dev/null; then echo "- applies: \`$p\`"; else echo "- **DOES NOT APPLY**: \`$p\`"; fi
+            done
+            echo
+            echo "### Stable surface"
+            echo '```'
+            node scripts/check-stable-surface.mjs engine 2>&1 || true
+            echo '```'
+          } > report.md
+          gh issue create --title "$TITLE" --body-file report.md

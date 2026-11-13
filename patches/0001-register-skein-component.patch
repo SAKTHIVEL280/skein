@@ -1,0 +1,12 @@
+diff --git i/browser/components/moz.build w/browser/components/moz.build
+index d1d769ab09..351d014061 100644
+--- i/browser/components/moz.build
++++ w/browser/components/moz.build
+@@ -68,6 +68,7 @@ DIRS += [
+     "sessionstore",
+     "shell",
+     "sidebar",
++    "skein",
+     "syncedtabs",
+     "tabbrowser",
+     "tabnotes",

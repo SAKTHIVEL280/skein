@@ -1,0 +1,5 @@
+{
+  "tabs": { "orientation": "vertical", "side": "right", "expanded": true },
+  "toolbar": { "bookmarksBar": "never" },
+  "density": "compact"
+}

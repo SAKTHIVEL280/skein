@@ -1,0 +1,1 @@
+{ "id": "work-calm", "name": "Calm (Work space)", "description": "Muted green accent while the Work space is active, plus space-switching shortcuts.", "version": "1.0.0", "touches": ["css", "keybindings"] }

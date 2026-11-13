@@ -1,0 +1,19 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+DIRS += ["content"]
+
+MOZ_SRC_FILES += [
+    "SkeinAgentDocs.sys.mjs",
+    "SkeinCustomization.sys.mjs",
+    "SkeinGlue.sys.mjs",
+    "SkeinPrivacy.sys.mjs",
+    "SkeinSpaces.sys.mjs",
+    "SkeinSurface.sys.mjs",
+    "SkeinValidator.sys.mjs",
+]
+
+EXTRA_COMPONENTS += [
+    "skein.manifest",
+]

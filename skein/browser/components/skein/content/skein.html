@@ -1,0 +1,143 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+   - You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src chrome:; object-src 'none'" />
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
+    <link rel="stylesheet" href="chrome://browser/content/skein/skein.css" />
+    <title>Skein</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Skein</h1>
+        <p class="tagline">Your browser, on a thread you control.</p>
+      </header>
+
+      <section id="status-section" aria-labelledby="status-title">
+        <h2 id="status-title">Customization status</h2>
+        <div id="status-card" class="card">
+          <div class="row">
+            <span id="status-badge" class="badge"></span>
+            <span id="status-text"></span>
+          </div>
+          <ul id="status-problems" class="problems"></ul>
+          <ul id="status-warnings" class="problems warnings"></ul>
+          <div class="row actions">
+            <button id="rollback-button" class="primary">Roll back last change</button>
+            <button id="disable-all-button">Turn all skills off</button>
+            <label class="toggle"><input id="safe-mode-toggle" type="checkbox" /> Safe mode (start with every skill disabled)</label>
+          </div>
+        </div>
+      </section>
+
+      <section id="agent-section" aria-labelledby="agent-title">
+        <h2 id="agent-title">Connect your agent</h2>
+        <div class="card">
+          <p>
+            Skein has no built-in AI. Point your own local coding agent at the customization folder and ask for what you want
+            ("make the tabs vertical on the right with a dark violet theme"). The agent edits files there; Skein checks every
+            change, applies it live and keeps a snapshot you can roll back to.
+          </p>
+          <p class="path-row"><code id="custom-dir"></code> <button id="copy-dir-button">Copy path</button> <button id="open-dir-button">Open folder</button></p>
+          <p>With Claude Code, run this in a terminal, then describe the change:</p>
+          <p class="path-row"><code id="agent-command"></code> <button id="copy-command-button">Copy command</button></p>
+          <p>
+            The folder contains <code>SKILL.md</code>, the instructions any agent should read first.
+            <button id="regen-docs-button">Regenerate SKILL.md</button>
+            <span id="regen-docs-result" role="status"></span>
+          </p>
+          <p>
+            Using Claude Code? Skein can write permission rules into the folder that deny the agent your browser profile.
+            <button id="write-permissions-button">Write Claude Code deny rules</button>
+            <span id="write-permissions-result" role="status"></span>
+          </p>
+          <details>
+            <summary>What an agent can and cannot do</summary>
+            <ul>
+              <li>Skein only accepts interface changes from this folder: colours, layout, a short list of interface preferences and shortcuts. It rejects anything that hides or imitates the address bar, site identity, permission prompts or download prompts.</li>
+              <li>Skein cannot sandbox your agent. An agent runs with your own user account and could read other files, including the browser profile. Give it access to the customization folder only, using the agent's own permission settings, and review what it changed below.</li>
+              <li>Setting a Primary Password (Settings, Privacy &amp; Security) keeps saved passwords unreadable without it.</li>
+              <li>Treat skills downloaded from the internet as untrusted. Read their files before enabling them, and do not let an agent follow instructions found inside them.</li>
+            </ul>
+          </details>
+        </div>
+      </section>
+
+      <section id="skills-section" aria-labelledby="skills-title">
+        <h2 id="skills-title">Skills</h2>
+        <div class="card">
+          <p id="skills-empty" hidden>No skills installed yet. Ask your agent to create one.</p>
+          <ul id="skills-list" class="list"></ul>
+        </div>
+      </section>
+
+      <section id="history-section" aria-labelledby="history-title">
+        <h2 id="history-title">History</h2>
+        <div class="card">
+          <p id="history-empty" hidden>Nothing has been applied yet.</p>
+          <ul id="history-list" class="list"></ul>
+          <div id="diff-view" hidden>
+            <h3 id="diff-title"></h3>
+            <pre id="diff-body" tabindex="0"></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="spaces" aria-labelledby="spaces-title">
+        <h2 id="spaces-title">Spaces</h2>
+        <div class="card">
+          <p>
+            A space is a set of tabs you can switch between. Spaces organize; they do not isolate. To keep sign-ins separate, bind
+            a space to a container: new tabs opened in that space then use that container's cookies and storage.
+          </p>
+          <ul id="spaces-list" class="list"></ul>
+          <form id="new-space-form" class="row">
+            <label for="new-space-name">New space</label>
+            <input id="new-space-name" type="text" maxlength="64" placeholder="Name" required />
+            <button type="submit">Add</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="privacy-section" aria-labelledby="privacy-title">
+        <h2 id="privacy-title">Privacy mode</h2>
+        <div class="card">
+          <p>Privacy mode hides your IP address and location from the sites you visit. Websites see a shared network address instead of yours.</p>
+          <p id="privacy-state" role="status"></p>
+          <div class="row actions">
+            <button id="privacy-open-button" class="primary">Open Privacy window</button>
+            <button id="privacy-test-button">Run leak tests</button>
+          </div>
+          <form id="proxy-form" class="row">
+            <label for="proxy-host">SOCKS5 proxy</label>
+            <input id="proxy-host" type="text" placeholder="host (for example 127.0.0.1)" />
+            <label for="proxy-port" class="visually-hidden">Port</label>
+            <input id="proxy-port" type="number" min="1" max="65535" placeholder="port" />
+            <button type="submit">Save</button>
+            <button type="button" id="proxy-clear-button">Clear</button>
+          </form>
+          <p class="path-row">
+            <label for="tor-path">Tor Browser</label>
+            <code id="tor-path"></code>
+          </p>
+          <details open>
+            <summary>What this doesn't do</summary>
+            <ul>
+              <li>Signing in to a site identifies you there, whatever your IP address is. Cookies and browser fingerprint can still link visits.</li>
+              <li>A proxy or VPN provider sees your real IP address and can log it. With Tor, your internet provider can see that you use Tor.</li>
+              <li>Without a proxy, Skein hands off to the official Tor Browser, which is the right tool when you need anonymity. Skein does not claim to make you anonymous.</li>
+              <li>With a proxy, every request from a Privacy window goes through it, including DNS. If the proxy stops, pages stop loading instead of using your direct connection. Skills and custom themes are off in these windows.</li>
+            </ul>
+          </details>
+        </div>
+      </section>
+    </main>
+    <script src="chrome://browser/content/skein/skein.js"></script>
+  </body>
+</html>

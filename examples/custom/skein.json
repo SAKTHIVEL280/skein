@@ -1,0 +1,7 @@
+{
+  "formatVersion": 1,
+  "enabled": ["midnight", "tabs-right"],
+  "spaces": {
+    "Work": { "enabled": ["work-calm"] }
+  }
+}

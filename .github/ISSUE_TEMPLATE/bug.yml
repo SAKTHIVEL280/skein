@@ -1,0 +1,25 @@
+name: Bug report
+description: Something in Skein does not work
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Security problem (validator bypass, privacy leak)? Do not file it here. See SECURITY.md."
+  - type: input
+    id: version
+    attributes:
+      label: Skein version and OS
+      description: From about:support
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: status
+    attributes:
+      label: Customization status
+      description: If it involves skills, paste .status.json from the customization folder and the skill files.

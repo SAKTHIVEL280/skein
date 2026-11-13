@@ -1,0 +1,1 @@
+{ "id": "tabs-right", "name": "Tabs on the right", "description": "Vertical tabs on the right edge, compact density, no bookmarks bar.", "version": "1.0.0", "touches": ["layout"] }

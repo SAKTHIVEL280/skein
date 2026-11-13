@@ -1,0 +1,14 @@
+:root {
+  --skein-chrome-bg: #efe6d8;
+  --skein-chrome-fg: #2b2118;
+  --skein-toolbar-bg: #f7f0e4;
+  --skein-toolbar-fg: #2b2118;
+  --skein-field-bg: #fffaf2;
+  --skein-field-fg: #1c140c;
+  --skein-field-border: #d9cbb5;
+  --skein-accent: #b3541e;
+  --skein-tab-selected-bg: #fffaf2;
+  --skein-sidebar-bg: #efe6d8;
+  --skein-sidebar-fg: #2b2118;
+  --skein-radius: 6px;
+}

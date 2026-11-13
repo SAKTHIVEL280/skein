@@ -1,0 +1,6 @@
+# Release build: common options plus link-time and profile-guided optimization.
+# Usage: MOZCONFIG=../mozconfigs/release.mozconfig ./mach build
+. "$topsrcdir/../mozconfigs/common.mozconfig"
+ac_add_options --enable-lto=cross
+ac_add_options MOZ_PGO=1
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/../obj-skein-release

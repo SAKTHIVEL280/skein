@@ -1,0 +1,37 @@
+diff --git i/browser/components/about/AboutRedirector.cpp w/browser/components/about/AboutRedirector.cpp
+index 48bbf4038d..1c27fc531c 100644
+--- i/browser/components/about/AboutRedirector.cpp
++++ w/browser/components/about/AboutRedirector.cpp
+@@ -93,9 +93,9 @@ static const RedirEntry kRedirMap[] = {
+     {"profiling",
+      "chrome://devtools/content/performance-new/aboutprofiling/index.html",
+      nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::IS_SECURE_CHROME_UI},
+-    {"rights", "https://www.mozilla.org/about/legal/terms/firefox/",
++    {"rights", "chrome://global/content/license.html",
+      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+-         nsIAboutModule::URI_MUST_LOAD_IN_CHILD},
++         nsIAboutModule::IS_SECURE_CHROME_UI},
+     {"robots", "chrome://browser/content/aboutRobots.xhtml",
+      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+          nsIAboutModule::ALLOW_SCRIPT},
+@@ -168,6 +168,8 @@ static const RedirEntry kRedirMap[] = {
+          nsIAboutModule::URI_CAN_LOAD_IN_PRIVILEGEDABOUT_PROCESS |
+          nsIAboutModule::HIDE_FROM_ABOUTABOUT},
+ #endif
++    {"skein", "chrome://browser/content/skein/skein.html",
++     nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::IS_SECURE_CHROME_UI},
+     {"keyboard", "chrome://browser/content/customkeys/customkeys.html",
+      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+          nsIAboutModule::IS_SECURE_CHROME_UI | nsIAboutModule::ALLOW_SCRIPT |
+diff --git i/browser/components/about/components.conf w/browser/components/about/components.conf
+index 6d439f1746..2259cf498e 100644
+--- i/browser/components/about/components.conf
++++ w/browser/components/about/components.conf
+@@ -10,6 +10,7 @@ pages = [
+     'downloads',
+     'framecrashed',
+     'keyboard',
++    'skein',
+     'logins',
+     'loginsimportreport',
+     'firefoxview',

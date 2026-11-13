@@ -1,0 +1,17 @@
+diff --git i/browser/base/content/browser-commands.js w/browser/base/content/browser-commands.js
+index a9a7ab4495..8e460b1cde 100644
+--- i/browser/base/content/browser-commands.js
++++ w/browser/base/content/browser-commands.js
+@@ -269,6 +269,12 @@ var BrowserCommands = {
+             relatedToCurrent,
+             resolveOnNewTabCreated: resolve,
+           };
++          let skeinContainer = ChromeUtils.importESModule(
++            "moz-src:///browser/components/skein/SkeinSpaces.sys.mjs"
++          ).SkeinSpaces.containerForNewTab(window);
++          if (skeinContainer) {
++            options.userContextId = skeinContainer;
++          }
+           if (!werePassedURL && searchClipboard) {
+             let clipboard = readFromClipboard();
+             clipboard =

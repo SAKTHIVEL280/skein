@@ -1,0 +1,14 @@
+# Skein build configuration shared by all platforms.
+ac_add_options --enable-application=browser
+ac_add_options --with-app-name=skein
+ac_add_options --with-app-basename=Skein
+ac_add_options --with-branding=browser/branding/skein
+ac_add_options --enable-optimize
+ac_add_options --enable-release
+ac_add_options --disable-debug
+ac_add_options --disable-tests
+# No crash reports or update pings go to Mozilla. Skein has no update server
+# yet; updates are manual downloads until one exists (see docs/release.md).
+ac_add_options --disable-crashreporter
+ac_add_options --disable-updater
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/../obj-skein

@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validator adversarial suite
+        run: node --test skein/tests/validator/
+      - name: Skein modules parse
+        run: |
+          for f in skein/browser/components/skein/*.sys.mjs skein/browser/components/skein/content/*.js scripts/*.mjs; do
+            node --check "$f"
+          done
+
+  # Full Firefox builds are too heavy for hosted runners; they run on the
+  # maintainer's machine (docs/release.md). This job checks the cheap part:
+  # that the patches still apply and the stable surface still exists.
+  surface:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+      - name: Sparse checkout of the Firefox ESR tag
+        run: |
+          TAG=$(grep -oE 'FIREFOX_[0-9_]+esr_RELEASE' PATCHES.md | head -1)
+          git clone --depth 1 --filter=blob:none --sparse --branch "$TAG" https://github.com/mozilla-firefox/firefox engine
+          git -C engine sparse-checkout set browser/base browser/components browser/themes browser/app/profile browser/branding toolkit/themes/shared toolkit/content toolkit/components/prompts modules/libpref/init
+          git -C engine sparse-checkout add --skip-checks browser/moz.configure || true
+      - name: Patches apply
+        run: |
+          for p in patches/*.patch; do git -C engine apply --check "../$p" && echo "ok $p"; done
+      - name: Stable surface
+        run: node scripts/check-stable-surface.mjs engine

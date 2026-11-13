@@ -1,0 +1,3 @@
+. "$topsrcdir/../mozconfigs/common.mozconfig"
+# Windows-only options go here. Untested: no Windows machine was available
+# when this file was written. See docs/build-windows.md.

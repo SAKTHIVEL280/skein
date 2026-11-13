@@ -1,0 +1,192 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+header h1 {
+  margin-block: 0 4px;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin-block: 0 24px;
+  color: var(--text-color-deemphasized);
+}
+
+h2 {
+  margin-block: 28px 8px;
+  font-size: 1.15rem;
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+.card {
+  padding: 16px;
+  border: 1px solid var(--border-color-card, var(--in-content-border-color));
+  border-radius: 8px;
+  background-color: var(--background-color-box, var(--in-content-box-background));
+}
+
+.card > p:first-child {
+  margin-top: 0;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions {
+  margin-top: 12px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge {
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #5b5b66;
+  color: #ffffff;
+
+  &[data-state="ok"] {
+    background-color: #1b6e3c;
+  }
+
+  &[data-state="rejected"],
+  &[data-state="integrity-failed"] {
+    background-color: #b3261e;
+  }
+
+  &[data-state="safe-mode"] {
+    background-color: #8a5a00;
+  }
+}
+
+.problems {
+  margin: 12px 0 0;
+  padding-inline-start: 20px;
+  overflow-wrap: anywhere;
+
+  &:empty {
+    display: none;
+  }
+
+  & code {
+    font-size: 0.85em;
+  }
+}
+
+.warnings {
+  color: var(--text-color-deemphasized);
+}
+
+.path-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+  overflow-wrap: anywhere;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.grow {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.sub {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-color-deemphasized);
+  overflow-wrap: anywhere;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex: none;
+}
+
+#new-space-form,
+#proxy-form {
+  margin-top: 12px;
+}
+
+#proxy-port {
+  width: 7em;
+}
+
+#diff-body {
+  max-height: 420px;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background-color: color-mix(in srgb, currentColor 6%, transparent);
+
+  & .add {
+    display: block;
+    background-color: color-mix(in srgb, #1b6e3c 30%, transparent);
+  }
+
+  & .del {
+    display: block;
+    background-color: color-mix(in srgb, #b3261e 30%, transparent);
+  }
+
+  & .file {
+    display: block;
+    margin-top: 8px;
+    font-weight: 700;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
