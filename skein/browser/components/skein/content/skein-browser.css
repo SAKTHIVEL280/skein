@@ -192,6 +192,10 @@ tab-group[skein-space-hidden] {
       opacity: 0.75;
     }
 
+    #tabbrowser-tabpanels {
+      background-color: light-dark(#ffffff, #1c1b22);
+    }
+
     #sidebar-box {
       margin-block-end: var(--skein-zen-gap);
       border-radius: var(--skein-zen-radius);
