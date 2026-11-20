@@ -56,6 +56,25 @@ Reproduce it: `python3 scripts/dev/demo.py`.
 - Spaces organize tabs. They are not a security boundary; containers are.
 - No sync service, no mobile apps, no extension store of its own.
 
+## Focus features
+
+- Zen-style layout: vertical tabs in a sidebar, page in a floating card.
+- Compact mode (`Ctrl+Alt+C`): sidebar and toolbar hide and slide in when
+  you move the mouse to the left or top edge. `Ctrl+Alt+B` hides only the
+  sidebar.
+- New tab (`Ctrl+T` or the + button) opens a floating search bar; what you
+  type opens in the new tab. Turn off with `skein.focus.floatingNewTab`.
+- `Ctrl+Tab` switches to the most recently used tab; hold it to see all tabs.
+- Closing the last tab keeps the window open.
+
+## AI agents: the /skein skill
+
+On start, Skein installs a `skein` skill into the AI coding agents it finds:
+Claude Code (`~/.claude/skills`), Codex (`~/.codex/skills`), Antigravity
+(`~/.gemini/antigravity/skills`), Gemini CLI, Cursor and `~/.agents/skills`.
+Ask your agent to "use /skein to make the tabs blue". Files you edit yourself
+are never overwritten. Turn off with `skein.agentSkills.install`.
+
 ## Try it
 
 There are no release downloads yet. Build from source:

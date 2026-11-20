@@ -244,6 +244,53 @@ export const SkeinCustomization = {
     if (!(await IOUtils.exists(skillMd))) {
       await this.writeAgentDocs();
     }
+    try {
+      await this.installAgentSkills();
+    } catch (e) {
+      console.error("Skein: agent skill install failed", e);
+    }
+  },
+
+  /**
+   * Make /skein available in the user's AI coding agents (Claude Code, Codex,
+   * Antigravity, Gemini CLI, Cursor and the shared ~/.agents convention).
+   * Only writes into tools that are installed, never overwrites a file the
+   * user edited (no marker), and can be turned off with skein.agentSkills.install.
+   */
+  async installAgentSkills() {
+    if (!Services.prefs.getBoolPref("skein.agentSkills.install", true)) {
+      return;
+    }
+    const home = Services.dirsvc.get("Home", Ci.nsIFile).path;
+    const marker = "<!-- skein:managed -->";
+    const body = await lazy.SkeinAgentDocs.build({ dir: this.dir });
+    const text =
+      "---\nname: skein\ndescription: Customize the Skein browser's interface (themes, layout, tabs, toolbar, keybindings) by editing its validated customization folder. Use when the user asks to change how Skein looks or behaves.\n---\n" +
+      marker + "\n\n" + body;
+    const targets = [
+      [".claude", "skills"],
+      [".codex", "skills"],
+      [".gemini", "antigravity", "skills"],
+      [".gemini", "skills"],
+      [".cursor", "skills"],
+      [".agents", "skills"],
+    ];
+    for (const parts of targets) {
+      const toolDir = PathUtils.join(home, parts[0]);
+      if (parts[0] !== ".agents" && !(await IOUtils.exists(toolDir))) {
+        continue;
+      }
+      const dir = PathUtils.join(home, ...parts, "skein");
+      const file = PathUtils.join(dir, "SKILL.md");
+      if (await IOUtils.exists(file)) {
+        const old = await IOUtils.readUTF8(file);
+        if (!old.includes(marker) || old === text) {
+          continue;
+        }
+      }
+      await IOUtils.makeDirectory(dir, { createAncestors: true });
+      await IOUtils.writeUTF8(file, text);
+    }
   },
 
   /** (Re)generate SKILL.md, the instruction file agents read before editing. */
