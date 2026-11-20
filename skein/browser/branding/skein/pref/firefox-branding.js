@@ -90,3 +90,11 @@ pref("skein.privacy.proxy.port", 0);
 pref("skein.privacy.torBrowserPath", "");
 pref("media.eme.enabled", true);
 pref("sidebar.verticalTabs.dragToPinPromo.dismissed", true);
+
+// Zen-style layout: vertical tabs in an always-visible sidebar, rounded content.
+pref("sidebar.revamp", true);
+pref("sidebar.verticalTabs", true);
+pref("sidebar.visibility", "always-show");
+pref("sidebar.revamp.round-content-area", true);
+pref("sidebar.main.tools", "history,bookmarks");
+pref("skein.ui.zen", true);

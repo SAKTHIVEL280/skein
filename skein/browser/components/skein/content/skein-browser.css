@@ -114,3 +114,87 @@ tab-group[skein-space-hidden] {
     translate: 0 calc(-100% + var(--urlbar-height));
   }
 }
+
+/* Zen-style chrome: sidebar blends into the window frame, content floats as a card.
+ * Values follow Zen Browser (github.com/zen-browser/desktop, MPL-2.0):
+ * zen-tokens.css (--zen-big-shadow), zen-workspaces.css (selected tab),
+ * vertical-tabs.css (radii). */
+
+@media -moz-pref("skein.ui.zen") {
+  :root:not([inFullscreen], [inDOMFullscreen]) {
+    --skein-zen-gap: 8px;
+    --skein-zen-radius: 10px;
+    --skein-zen-frame: light-dark(#e9e7ee, #1f1e25);
+
+    #navigator-toolbox,
+    #nav-bar,
+    #sidebar-main,
+    #browser {
+      background-color: var(--skein-zen-frame);
+      color: light-dark(#1b1a20, #ece9f2);
+      border: none;
+      box-shadow: none;
+    }
+
+    #navigator-toolbox {
+      border-bottom: none;
+    }
+
+    #nav-bar {
+      padding-block: 2px;
+    }
+
+    #urlbar-background {
+      border-radius: 8px;
+    }
+
+    #tabbrowser-tabbox {
+      margin: 0 var(--skein-zen-gap) var(--skein-zen-gap) 0;
+      border-radius: var(--skein-zen-radius);
+      overflow: clip;
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+
+    #sidebar-main {
+      padding-inline: 4px;
+    }
+
+    #tabbrowser-tabs[orient="vertical"] {
+      .tab-background {
+        border-radius: 8px;
+        box-shadow: none;
+        outline: none;
+      }
+
+      .tabbrowser-tab:not([selected]):hover .tab-background {
+        background-color: color-mix(in srgb, currentColor 8%, transparent);
+      }
+
+      .tabbrowser-tab[selected] .tab-background {
+        background-color: light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18));
+        box-shadow: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05));
+      }
+
+      .tabbrowser-tab:not(:hover, [selected]) .tab-close-button {
+        visibility: hidden;
+      }
+
+      #vertical-pinned-tabs-container {
+        gap: 4px;
+        padding-block-end: 6px;
+        border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+      }
+    }
+
+    #tabs-newtab-button,
+    #vertical-tabs-newtab-button {
+      border-radius: 8px;
+      opacity: 0.75;
+    }
+
+    #sidebar-box {
+      margin-block-end: var(--skein-zen-gap);
+      border-radius: var(--skein-zen-radius);
+    }
+  }
+}
