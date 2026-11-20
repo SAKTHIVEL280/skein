@@ -423,6 +423,14 @@ def main():
         r = b.chrome("return document.getElementById('nav-bar').parentNode.id")
         b.chrome("Services.prefs.setBoolPref('skein.ui.topSearchBar', false)")
         check("focus: skein.ui.topSearchBar puts the address bar back on top", r == "navigator-toolbox", str(r))
+        G = "const {SkeinFocus} = ChromeUtils.importESModule('moz-src:///browser/components/skein/SkeinFocus.sys.mjs'); const sys = Services.scriptSecurityManager.getSystemPrincipal();"
+        b.chrome(G + "SkeinFocus.openGlance(window, 'about:robots', sys)")
+        time.sleep(2)
+        r1 = b.chrome("return [document.documentElement.hasAttribute('skein-glance-open'), gBrowser.selectedBrowser.currentURI.spec, !!document.getElementById('skein-context-glance')]")
+        b.chrome(G + "SkeinFocus.closeGlance(window)")
+        time.sleep(1)
+        r2 = b.chrome("return [document.documentElement.hasAttribute('skein-glance-open'), gBrowser.tabs.length]")
+        check("focus: Glance opens a link in a floating card and Esc/Close returns", r1 == [True, "about:robots", True] and r2 == [False, 1], str([r1, r2]))
         r = b.chrome("return Services.prefs.getBoolPref('browser.ctrlTab.sortByRecentlyUsed')")
         check("focus: Ctrl+Tab uses recently-used order", r is True, str(r))
 

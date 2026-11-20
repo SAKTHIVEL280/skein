@@ -12,6 +12,8 @@
  *    (skein.ui.topSearchBar restores the classic top bar)
  *  - empty state: closing the last tab shows a blank home page instead of a
  *    stray "New Tab" entry in the sidebar
+ *  - Glance: open a link in a floating card from the link context menu;
+ *    "Open as tab" keeps it, Esc or Close returns to the page
  *  - shortcuts (Ctrl+Alt+C compact, Ctrl+Alt+B sidebar); Ctrl+Tab switching
  *    in recently-used order is a default pref (firefox-branding.js)
  */
@@ -58,6 +60,7 @@ export const SkeinFocus = {
       Services.prefs.addObserver(PREF_VERTICAL, () => Services.tm.dispatchToMainThread(relayout));
     }
     syncRootAttrs(win);
+    this._initGlance(win);
     this._initLayout(win);
     this._initEmptyState(win);
     if (!Services.prefs.getBoolPref("skein.focus.placedSidebarButton", false)) {
@@ -70,6 +73,95 @@ export const SkeinFocus = {
     }
     win.addEventListener("command", e => this._onCommand(win, e), true);
     win.addEventListener("keydown", e => this._onKey(win, e), true);
+  },
+
+  _initGlance(win) {
+    const doc = win.document;
+    const menu = doc.getElementById("contentAreaContextMenu");
+    const anchor = doc.getElementById("context-openlinkintab");
+    if (!menu || !anchor) {
+      return;
+    }
+    const item = doc.createXULElement("menuitem");
+    item.id = "skein-context-glance";
+    item.setAttribute("label", "Open in Glance");
+    item.setAttribute("accesskey", "G");
+    item.addEventListener("command", () => {
+      const ctx = win.gContextMenu;
+      if (ctx?.linkURL) {
+        this.openGlance(win, ctx.linkURL, ctx.principal);
+      }
+    });
+    anchor.after(item);
+    menu.addEventListener("popupshowing", e => {
+      if (e.target === menu) {
+        item.hidden = !win.gContextMenu?.onLink || win.gContextMenu.onMailtoLink;
+      }
+    });
+    win.gBrowser.tabContainer.addEventListener("TabSelect", e => {
+      const prev = e.detail?.previousTab;
+      if (prev?.hasAttribute("skein-glance") && e.target !== prev) {
+        win.gBrowser.removeTab(prev, { animate: false });
+      }
+      this._syncGlance(win);
+    });
+  },
+
+  openGlance(win, url, principal) {
+    const gBrowser = win.gBrowser;
+    const opener = gBrowser.selectedTab;
+    const tab = gBrowser.addTab(url, {
+      triggeringPrincipal: principal || Services.scriptSecurityManager.createNullPrincipal({}),
+      relatedToCurrent: true,
+      skipAnimation: true,
+    });
+    tab.setAttribute("skein-glance", "true");
+    tab._skeinGlanceOpener = opener;
+    gBrowser.selectedTab = tab;
+    this._syncGlance(win);
+  },
+
+  closeGlance(win, keep = false) {
+    const gBrowser = win.gBrowser;
+    const tab = gBrowser.selectedTab;
+    if (!tab.hasAttribute("skein-glance")) {
+      return;
+    }
+    if (keep) {
+      tab.removeAttribute("skein-glance");
+      this._syncGlance(win);
+      return;
+    }
+    const opener = tab._skeinGlanceOpener;
+    if (opener && !opener.closing && opener.isConnected) {
+      gBrowser.selectedTab = opener;
+    } else {
+      gBrowser.removeTab(tab, { animate: false });
+    }
+  },
+
+  _syncGlance(win) {
+    const doc = win.document;
+    const open = win.gBrowser.selectedTab.hasAttribute("skein-glance");
+    doc.documentElement.toggleAttribute("skein-glance-open", open);
+    let bar = doc.getElementById("skein-glance-bar");
+    if (open && !bar) {
+      const H = tag => doc.createElementNS("http://www.w3.org/1999/xhtml", tag);
+      bar = H("div");
+      bar.id = "skein-glance-bar";
+      const expand = H("button");
+      expand.textContent = "Open as tab";
+      expand.addEventListener("click", () => this.closeGlance(win, true));
+      const close = H("button");
+      close.textContent = "Close";
+      close.title = "Close (Esc)";
+      close.addEventListener("click", () => this.closeGlance(win));
+      bar.append(expand, close);
+      doc.documentElement.append(bar);
+    }
+    if (bar) {
+      bar.hidden = !open;
+    }
   },
 
   _initLayout(win) {
@@ -168,6 +260,12 @@ export const SkeinFocus = {
   },
 
   _onKey(win, e) {
+    if (e.key === "Escape" && win.document.documentElement.hasAttribute("skein-glance-open")) {
+      this.closeGlance(win);
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     const accel = e.ctrlKey || e.metaKey;
     if (accel && e.altKey && !e.shiftKey) {
       if (e.code === "KeyC") {

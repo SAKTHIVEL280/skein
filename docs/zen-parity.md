@@ -18,6 +18,7 @@ Each "done" item is covered by `scripts/dev/test_skein.py` unless noted.
 | Essentials (pinned tiles) | Pinned tabs shown as a tile grid; drag a tab up to pin it | drag, or right-click → Pin |
 | Close the last tab | Window stays open and shows an empty home page; no stray "New Tab" in the sidebar | `browser.tabs.closeWindowWithLastTab` (false) |
 | Recent-tab switching | Quick `Ctrl+Tab` flips to the last tab; hold to see all tabs | `browser.ctrlTab.sortByRecentlyUsed` |
+| Glance | Right-click a link → Open in Glance: floating card over a dimmed page; Open as tab / Close / Esc | context menu |
 | Workspaces | Skein Spaces, shown as a row under the address field | Spaces widget |
 
 ## Better than Zen
@@ -34,5 +35,5 @@ Each "done" item is covered by `scripts/dev/test_skein.py` unless noted.
 
 - Split view (two pages side by side).
 - Per-space Essentials (Zen keeps Essentials per container).
-- Glance (open a link in a floating preview).
+- Glance on Alt+click (today it is in the link context menu).
 - Move the window buttons out of the sidebar on Windows when the toolbar is there.

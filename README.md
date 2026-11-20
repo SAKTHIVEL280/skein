@@ -69,6 +69,8 @@ Reproduce it: `python3 scripts/dev/demo.py`.
   sidebar.
 - New tab (`Ctrl+T` or the + button) opens a floating search bar; what you
   type opens in the new tab. Turn off with `skein.focus.floatingNewTab`.
+- Glance: right-click a link → Open in Glance to preview it in a floating
+  card; Open as tab keeps it, Esc closes it.
 - `Ctrl+Tab` switches to the most recently used tab; hold it to see all tabs.
 - Closing the last tab keeps the window open on an empty home page.
 
