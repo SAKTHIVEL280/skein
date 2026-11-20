@@ -1,13 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="64" height="64" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="64" height="64">
   <defs>
-    <linearGradient id="thread" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#d4d0e2"/>
-      <stop offset="0.55" stop-color="#8a7eb5"/>
-      <stop offset="1" stop-color="#1b9e5a"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5f5f7"/>
+      <stop offset="1" stop-color="#d6d6da"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.15"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
   </defs>
-  <g transform="translate(256, 256) rotate(45)" stroke="url(#thread)" stroke-width="28" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4">
-    <path d="M -46 124 L -124 124 L -124 -124 L -26 -124 A 58 58 0 0 1 32 -66 L 32 76" />
-    <path d="M 46 -124 L 124 -124 L 124 124 L 26 124 A 58 58 0 0 1 -32 66 L -32 -76" opacity="0.6" />
-  </g>
+  <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#bg)"/>
+  <rect x="17.5" y="17.5" width="477" height="477" rx="118.5" fill="none" stroke="url(#edge)" stroke-width="3"/>
+  <path d="M 340 148 H 206 A 57 57 0 0 0 206 262 H 306 A 57 57 0 0 1 306 376 H 172"
+        fill="none" stroke="#0b0b0c" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="394" cy="148" r="19" fill="#0b0b0c"/>
 </svg>

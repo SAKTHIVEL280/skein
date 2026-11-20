@@ -90,3 +90,20 @@ pref("skein.privacy.proxy.port", 0);
 pref("skein.privacy.torBrowserPath", "");
 pref("media.eme.enabled", true);
 pref("sidebar.verticalTabs.dragToPinPromo.dismissed", true);
+
+// Zen-style layout: vertical tabs in an always-visible sidebar, rounded content.
+pref("sidebar.revamp", true);
+pref("sidebar.verticalTabs", true);
+pref("sidebar.visibility", "always-show");
+pref("sidebar.revamp.round-content-area", true);
+pref("sidebar.main.tools", "history,bookmarks");
+pref("skein.ui.zen", true);
+
+// Focus features (SkeinFocus.sys.mjs).
+pref("browser.tabs.closeWindowWithLastTab", false);
+pref("browser.ctrlTab.sortByRecentlyUsed", true);
+pref("browser.toolbars.bookmarks.visibility", "never");
+pref("skein.focus.compact", false);
+pref("skein.focus.sidebarHidden", false);
+pref("skein.focus.floatingNewTab", true);
+pref("skein.agentSkills.install", true);
