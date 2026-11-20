@@ -7,3 +7,6 @@ browser.jar:
     content/browser/skein/skein.js
     content/browser/skein/skein.css
     content/browser/skein/skein-browser.css
+    content/browser/skein/empty.html
+    content/browser/skein/empty.css
+    content/browser/skein/empty.js

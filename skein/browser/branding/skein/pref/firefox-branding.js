@@ -102,7 +102,8 @@ pref("skein.ui.zen", true);
 // Focus features (SkeinFocus.sys.mjs).
 pref("browser.tabs.closeWindowWithLastTab", false);
 pref("browser.ctrlTab.sortByRecentlyUsed", true);
-pref("browser.toolbars.bookmarks.visibility", "never");
+pref("browser.toolbars.bookmarks.visibility", "always");
+pref("skein.ui.topSearchBar", false);
 pref("skein.focus.compact", false);
 pref("skein.focus.sidebarHidden", false);
 pref("skein.focus.floatingNewTab", true);

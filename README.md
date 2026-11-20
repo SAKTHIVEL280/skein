@@ -58,14 +58,21 @@ Reproduce it: `python3 scripts/dev/demo.py`.
 
 ## Focus features
 
-- Zen-style layout: vertical tabs in a sidebar, page in a floating card.
+- Zen-style layout: vertical tabs in a sidebar, page in a floating card. The
+  address bar lives at the top of the sidebar and floats over the page when
+  focused; the top of the window is only for bookmarks
+  (`skein.ui.topSearchBar` brings the classic top bar back).
+- Essentials: pinned tabs show as tiles at the top of the sidebar; drag a tab
+  there to keep it.
 - Compact mode (`Ctrl+Alt+C`): sidebar and toolbar hide and slide in when
   you move the mouse to the left or top edge. `Ctrl+Alt+B` hides only the
   sidebar.
 - New tab (`Ctrl+T` or the + button) opens a floating search bar; what you
   type opens in the new tab. Turn off with `skein.focus.floatingNewTab`.
 - `Ctrl+Tab` switches to the most recently used tab; hold it to see all tabs.
-- Closing the last tab keeps the window open.
+- Closing the last tab keeps the window open on an empty home page.
+
+Full list and what is next: [docs/zen-parity.md](docs/zen-parity.md).
 
 ## AI agents: the /skein skill
 

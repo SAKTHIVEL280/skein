@@ -7,6 +7,11 @@
  *  - compact mode: sidebar and toolbar hide and slide back in at the edges
  *  - floating new-tab bar: Ctrl+T and the new-tab button open a centered
  *    search field; what you type becomes the new tab
+ *  - sidebar toolbar: with vertical tabs the navigation toolbar lives at the
+ *    top of the sidebar and the top of the window only holds bookmarks
+ *    (skein.ui.topSearchBar restores the classic top bar)
+ *  - empty state: closing the last tab shows a blank home page instead of a
+ *    stray "New Tab" entry in the sidebar
  *  - shortcuts (Ctrl+Alt+C compact, Ctrl+Alt+B sidebar); Ctrl+Tab switching
  *    in recently-used order is a default pref (firefox-branding.js)
  */
@@ -14,6 +19,10 @@
 const PREF_COMPACT = "skein.focus.compact";
 const PREF_FLOATING = "skein.focus.floatingNewTab";
 const PREF_HIDE_SIDEBAR = "skein.focus.sidebarHidden";
+
+const PREF_TOP_BAR = "skein.ui.topSearchBar";
+const PREF_VERTICAL = "sidebar.verticalTabs";
+const EMPTY_URL = "chrome://browser/content/skein/empty.html";
 
 const NEW_TAB_COMMANDS = new Set(["cmd_newNavigatorTab", "cmd_newNavigatorTabNoEvent"]);
 
@@ -40,8 +49,17 @@ export const SkeinFocus = {
       };
       Services.prefs.addObserver(PREF_COMPACT, refresh);
       Services.prefs.addObserver(PREF_HIDE_SIDEBAR, refresh);
+      const relayout = () => {
+        for (const w of Services.wm.getEnumerator("navigator:browser")) {
+          this._layout(w);
+        }
+      };
+      Services.prefs.addObserver(PREF_TOP_BAR, relayout);
+      Services.prefs.addObserver(PREF_VERTICAL, () => Services.tm.dispatchToMainThread(relayout));
     }
     syncRootAttrs(win);
+    this._initLayout(win);
+    this._initEmptyState(win);
     if (!Services.prefs.getBoolPref("skein.focus.placedSidebarButton", false)) {
       Services.prefs.setBoolPref("skein.focus.placedSidebarButton", true);
       try {
@@ -52,6 +70,83 @@ export const SkeinFocus = {
     }
     win.addEventListener("command", e => this._onCommand(win, e), true);
     win.addEventListener("keydown", e => this._onKey(win, e), true);
+  },
+
+  _initLayout(win) {
+    const navbar = win.document.getElementById("nav-bar");
+    win._skeinNavbarHome = { parent: navbar.parentNode, next: navbar.nextElementSibling };
+    win.addEventListener("beforecustomization", () => this._layout(win, true));
+    win.addEventListener("aftercustomization", () => this._layout(win));
+    this._layout(win);
+  },
+
+  _layout(win, forceTop = false) {
+    const doc = win.document;
+    const navbar = doc.getElementById("nav-bar");
+    const container = doc.getElementById("sidebar-container");
+    const home = win._skeinNavbarHome;
+    if (!navbar || !container || !home) {
+      return;
+    }
+    const inSidebar =
+      !forceTop &&
+      Services.prefs.getBoolPref(PREF_VERTICAL, false) &&
+      !Services.prefs.getBoolPref(PREF_TOP_BAR, false) &&
+      Services.prefs.getBoolPref("skein.ui.zen", true);
+    if (inSidebar && navbar.parentNode !== container) {
+      container.prepend(navbar);
+    } else if (!inSidebar && navbar.parentNode !== home.parent) {
+      home.parent.insertBefore(navbar, home.next);
+    }
+    doc.documentElement.toggleAttribute("skein-sidebar-toolbar", inSidebar);
+  },
+
+  _initEmptyState(win) {
+    if (!win.gInitialPages.includes(EMPTY_URL)) {
+      win.gInitialPages.push(EMPTY_URL);
+    }
+    const gBrowser = win.gBrowser;
+    gBrowser.tabContainer.addEventListener("TabClose", e => {
+      if (e.target.hasAttribute("skein-empty")) {
+        return;
+      }
+      win.setTimeout(() => {
+        const tabs = gBrowser.tabs.filter(t => !t.closing);
+        if (tabs.length === 1 && !tabs[0].pinned && !tabs[0].hasAttribute("skein-empty") && win.isBlankPageURL(tabs[0].linkedBrowser.currentURI.spec)) {
+          this._makeEmpty(win, tabs[0]);
+        }
+      }, 0);
+    });
+    gBrowser.addTabsProgressListener({
+      onLocationChange(browser, webProgress, request, location) {
+        if (!webProgress.isTopLevel || location.spec === EMPTY_URL) {
+          return;
+        }
+        const tab = gBrowser.getTabForBrowser(browser);
+        if (tab?.hasAttribute("skein-empty") && !win.isBlankPageURL(location.spec)) {
+          tab.removeAttribute("skein-empty");
+        }
+      },
+    });
+    gBrowser.tabContainer.addEventListener("TabOpen", e => {
+      if (e.target.hasAttribute("skein-empty")) {
+        return;
+      }
+      win.setTimeout(() => {
+        for (const t of gBrowser.tabs.filter(x => x.hasAttribute("skein-empty") && !x.closing)) {
+          if (gBrowser.tabs.length > 1) {
+            gBrowser.removeTab(t, { animate: false });
+          }
+        }
+      }, 0);
+    });
+  },
+
+  _makeEmpty(win, tab) {
+    tab.setAttribute("skein-empty", "true");
+    tab.linkedBrowser.fixupAndLoadURIString(EMPTY_URL, {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+    });
   },
 
   _onCommand(win, e) {

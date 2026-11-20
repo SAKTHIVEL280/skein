@@ -313,3 +313,143 @@ tab-group[skein-space-hidden] {
     opacity: 0.6;
   }
 }
+
+/* Sidebar toolbar: with vertical tabs the navigation bar sits at the top of
+ * the sidebar (Zen's single-toolbar layout). */
+
+:root[skein-sidebar-toolbar] {
+  #sidebar-container {
+    flex-direction: column;
+
+    > sidebar-main {
+      flex: 1;
+    }
+  }
+
+  #PanelUI-button {
+    position: absolute;
+    top: 6px;
+    inset-inline-start: 4px;
+    margin: 0 !important;
+  }
+
+  #sidebar-button {
+    margin-inline-start: 32px !important;
+  }
+
+  #nav-bar {
+    background: transparent !important;
+    border: none !important;
+    padding: 6px 4px 2px;
+    max-width: 100%;
+  }
+
+  #nav-bar-customization-target {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  #nav-bar :is(#firefox-view-button, #alltabs-button, .titlebar-spacer, #customizableui-special-spring1, #customizableui-special-spring2) {
+    display: none;
+  }
+
+  #skein-spaces-widget {
+    order: 100;
+    flex: 1 1 100%;
+    justify-content: center;
+    margin: 0 !important;
+  }
+
+  #urlbar-container {
+    order: 99;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+    padding-inline: 4px !important;
+  }
+
+  #urlbar:not([breakout-extend], [focused]) {
+    --urlbar-height: 34px;
+
+    .urlbar-background {
+      border-radius: 10px;
+    }
+  }
+
+  /* Focused address field floats over the page, centered, like Zen. */
+  #urlbar:is([breakout-extend], [focused]) {
+    position: fixed !important;
+    top: 18vh !important;
+    left: calc(50vw - min(340px, 45vw)) !important;
+    width: min(680px, 90vw) !important;
+    z-index: 100;
+
+    .urlbar-background {
+      border-radius: 14px;
+      box-shadow: rgba(0, 0, 0, 0.3) 0 10px 40px !important;
+    }
+  }
+
+  #urlbar:is([breakout-extend], [focused])::before {
+    content: "";
+    position: fixed;
+    inset: -100vh -100vw;
+    background: rgba(0, 0, 0, 0.18);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  #tabbrowser-tabbox {
+    margin-top: var(--skein-zen-gap, 8px);
+  }
+
+  #navigator-toolbox:not(:has(#PersonalToolbar:not([collapsed="true"]))) {
+    display: none;
+  }
+}
+
+:root[skein-compact][skein-sidebar-toolbar] #tabbrowser-tabbox {
+  margin-top: 8px;
+}
+
+/* Essentials: pinned tabs as a grid of tiles at the top of the sidebar.
+ * Drag any tab here to keep it. */
+
+@media -moz-pref("skein.ui.zen") {
+  #tabbrowser-tabs[orient="vertical"][expanded] #vertical-pinned-tabs-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 6px;
+    padding: 4px 2px 10px;
+
+    .tabbrowser-tab {
+      width: auto !important;
+      max-width: none !important;
+      padding: 0 !important;
+
+      .tab-background {
+        min-height: 46px;
+        margin: 0 !important;
+        border-radius: 12px;
+        background-color: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.07));
+      }
+
+      &[selected] .tab-background {
+        background-color: light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.2));
+        box-shadow: 0 0.8px 1.5px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05));
+      }
+
+      .tab-content {
+        justify-content: center;
+        min-height: 46px;
+      }
+    }
+  }
+}
+
+/* Placeholder tab behind the empty home page never shows in the sidebar. */
+.tabbrowser-tab[skein-empty] {
+  display: none !important;
+}
