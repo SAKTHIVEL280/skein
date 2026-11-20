@@ -71,7 +71,8 @@ Reproduce it: `python3 scripts/dev/demo.py`.
 
 On start, Skein installs a `skein` skill into the AI coding agents it finds:
 Claude Code (`~/.claude/skills`), Codex (`~/.codex/skills`), Antigravity
-(`~/.gemini/antigravity/skills`), Gemini CLI, Cursor and `~/.agents/skills`.
+(`~/.gemini/config/skills`, legacy `~/.gemini/antigravity/skills`), Gemini CLI
+(`~/.gemini/skills`), Cursor (`~/.cursor/skills`) and `~/.agents/skills`.
 Ask your agent to "use /skein to make the tabs blue". Files you edit yourself
 are never overwritten. Turn off with `skein.agentSkills.install`.
 

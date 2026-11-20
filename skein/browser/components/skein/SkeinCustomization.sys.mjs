@@ -270,6 +270,7 @@ export const SkeinCustomization = {
     const targets = [
       [".claude", "skills"],
       [".codex", "skills"],
+      [".gemini", "config", "skills"],
       [".gemini", "antigravity", "skills"],
       [".gemini", "skills"],
       [".cursor", "skills"],
