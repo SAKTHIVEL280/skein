@@ -11,6 +11,7 @@
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   SkeinCustomization: "moz-src:///browser/components/skein/SkeinCustomization.sys.mjs",
+  SkeinFocus: "moz-src:///browser/components/skein/SkeinFocus.sys.mjs",
   SkeinPrivacy: "moz-src:///browser/components/skein/SkeinPrivacy.sys.mjs",
   SkeinSpaces: "moz-src:///browser/components/skein/SkeinSpaces.sys.mjs",
 });
@@ -33,6 +34,7 @@ export const SkeinGlue = {
 
   browserWindowDelayedStartup(win) {
     guard("built-in sheet", () => win.windowUtils.loadSheetUsingURIString(BUILTIN_SHEET, win.windowUtils.AUTHOR_SHEET));
+    guard("focus window init", () => lazy.SkeinFocus.browserWindowDelayedStartup(win));
     guard("spaces window init", () => lazy.SkeinSpaces.browserWindowDelayedStartup(win));
     guard("privacy window init", () => lazy.SkeinPrivacy.browserWindowDelayedStartup(win));
     guard("customization window init", () => lazy.SkeinCustomization.browserWindowDelayedStartup(win));

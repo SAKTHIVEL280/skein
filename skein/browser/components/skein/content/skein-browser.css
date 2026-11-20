@@ -128,7 +128,7 @@ tab-group[skein-space-hidden] {
 
     #navigator-toolbox,
     #nav-bar,
-    #sidebar-main,
+    sidebar-main,
     #browser {
       background-color: var(--skein-zen-frame);
       color: light-dark(#1b1a20, #ece9f2);
@@ -155,7 +155,7 @@ tab-group[skein-space-hidden] {
       box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     }
 
-    #sidebar-main {
+    sidebar-main {
       padding-inline: 4px;
     }
 
@@ -196,5 +196,103 @@ tab-group[skein-space-hidden] {
       margin-block-end: var(--skein-zen-gap);
       border-radius: var(--skein-zen-radius);
     }
+  }
+}
+
+/* Focus: compact mode. Sidebar and toolbar slide in from the window edges. */
+
+:root[skein-compact]:not([inFullscreen], [customizing]) {
+  #navigator-toolbox {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 10;
+    translate: 0 calc(-100% + 6px);
+    transition: translate 180ms ease, box-shadow 180ms ease;
+    background-color: var(--skein-zen-frame, var(--toolbar-bgcolor));
+    border-radius: 0 0 10px 10px;
+
+    &:hover,
+    &:focus-within,
+    &:has([open]) {
+      translate: 0 0;
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+  }
+
+  #navigator-toolbox:not(:hover, :focus-within, :has([open])) #urlbar {
+    opacity: 0;
+  }
+
+  #tabbrowser-tabbox {
+    margin-top: 8px;
+  }
+}
+
+:root:is([skein-compact], [skein-sidebar-hidden]):not([inFullscreen], [customizing]) {
+  sidebar-main {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    z-index: 11;
+    translate: calc(-100% + 6px) 0;
+    transition: translate 180ms ease, box-shadow 180ms ease;
+    background-color: var(--skein-zen-frame, var(--toolbar-bgcolor));
+    border-radius: 0 10px 10px 0;
+
+    &:hover,
+    &:focus-within {
+      translate: 0 0;
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+  }
+
+  #tabbrowser-tabbox {
+    margin-inline-start: 8px;
+  }
+}
+
+/* Focus: floating new-tab bar */
+
+#skein-newtab-bar {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 22vh;
+  background: rgba(0, 0, 0, 0.18);
+
+  &[hidden] {
+    display: none;
+  }
+
+  .skein-newtab-box {
+    width: min(640px, calc(100vw - 32px));
+    padding: 10px;
+    border-radius: 14px;
+    background: light-dark(#ffffff, #2a2930);
+    color: light-dark(#1b1a20, #ece9f2);
+    box-shadow: rgba(0, 0, 0, 0.3) 0 10px 40px;
+  }
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    background: light-dark(#f1f0f5, #1f1e25);
+    color: inherit;
+    outline: none;
+  }
+
+  .skein-newtab-hint {
+    padding: 8px 4px 0;
+    font-size: 11px;
+    opacity: 0.6;
   }
 }
