@@ -1,6 +1,6 @@
 # Building Skein for Windows
 
-> **Not yet tested.** Skein has so far only been built and run on Linux.
+> **Cross-compiled, not yet run on Windows.** Option B below produces an installer.
 > These steps follow Mozilla's documented Windows build process plus Skein's
 > overlay; expect to fix small things the first time through, and please
 > record what you changed.
@@ -63,9 +63,20 @@ cd engine
 rustup target add x86_64-pc-windows-msvc
 ```
 
-then a mozconfig with `ac_add_options --target=x86_64-pc-windows-msvc` and
-`export WINSYSROOT=$HOME/.mozbuild/vs`. This has been started but not
-completed (the SDK download succeeded; unpacking needs `msiextract`).
+then build with the ready-made `mozconfigs/windows-cross.mozconfig`
+(clang-cl target, `WINSYSROOT`, and `--enable-bootstrap` so the build fetches
+the Windows App SDK itself):
+
+```sh
+scripts/apply.sh
+cd engine
+export MOZCONFIG=$PWD/../mozconfigs/windows-cross.mozconfig
+./mach build && ./mach package
+# -> ../obj-skein-win/dist/skein-<version>.en-US.win64.installer.exe (+ .zip)
+```
+
+This works: a full cross build takes about 30 minutes on a laptop. The
+resulting installer has not yet been run on a real Windows machine.
 
 ## Unsigned builds
 
