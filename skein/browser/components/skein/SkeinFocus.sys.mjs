@@ -42,11 +42,25 @@ export const SkeinFocus = {
       Services.prefs.addObserver(PREF_HIDE_SIDEBAR, refresh);
     }
     syncRootAttrs(win);
+    if (!Services.prefs.getBoolPref("skein.focus.placedSidebarButton", false)) {
+      Services.prefs.setBoolPref("skein.focus.placedSidebarButton", true);
+      try {
+        win.CustomizableUI.addWidgetToArea("sidebar-button", win.CustomizableUI.AREA_NAVBAR, 0);
+      } catch (e) {
+        console.error("Skein: placing sidebar button failed", e);
+      }
+    }
     win.addEventListener("command", e => this._onCommand(win, e), true);
     win.addEventListener("keydown", e => this._onKey(win, e), true);
   },
 
   _onCommand(win, e) {
+    if (e.target?.id === "sidebar-button" && Services.prefs.getBoolPref("skein.ui.zen", true)) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      togglePref(PREF_HIDE_SIDEBAR);
+      return;
+    }
     if (!NEW_TAB_COMMANDS.has(e.target?.id) || !Services.prefs.getBoolPref(PREF_FLOATING, true)) {
       return;
     }
