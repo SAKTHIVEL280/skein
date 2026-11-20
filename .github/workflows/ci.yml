@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 22
       - name: Validator adversarial suite
-        run: node --test skein/tests/validator/
+        run: node --test skein/tests/validator/*.test.mjs
       - name: Skein modules parse
         run: |
           for f in skein/browser/components/skein/*.sys.mjs skein/browser/components/skein/content/*.js scripts/*.mjs; do
