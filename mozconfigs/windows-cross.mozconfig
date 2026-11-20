@@ -1,0 +1,7 @@
+# Cross-compile Skein for 64-bit Windows from Linux (docs/build-windows.md, option B).
+# Use with: MOZCONFIG=$PWD/../mozconfigs/windows-cross.mozconfig ./mach build
+. "$topsrcdir/../mozconfigs/common.mozconfig"
+ac_add_options --target=x86_64-pc-windows-msvc
+export WINSYSROOT="$HOME/.mozbuild/vs"
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/../obj-skein-win
+ac_add_options --enable-bootstrap
