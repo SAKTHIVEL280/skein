@@ -1,7 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="64" height="64">
-  <!-- Private-window mark: the Skein mark inverted (black disc, white rim). -->
-  <circle cx="256" cy="256" r="234" fill="#0a0a0a" stroke="#ffffff" stroke-width="32"/>
-  <path d="M 326 150 H 216 A 53 53 0 0 0 216 256 H 296 A 53 53 0 0 1 296 362 H 178"
-        fill="none" stroke="#ffffff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="384" cy="150" r="24" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Private-window mark: the yarn glyph as a solid ball. One colour, transparent. -->
+  <defs>
+    <clipPath id="b"><circle cx="230" cy="220" r="170"/></clipPath>
+    <mask id="m">
+      <rect width="512" height="512" fill="#fff"/>
+      <g clip-path="url(#b)" fill="none" stroke="#000" stroke-width="30" stroke-linecap="round">
+        <path d="M40 150 C 150 110, 300 170, 360 330"/>
+        <path d="M90 60 C 210 40, 360 120, 420 250"/>
+        <path d="M40 260 C 130 230, 230 300, 260 420"/>
+      </g>
+    </mask>
+  </defs>
+  <circle cx="230" cy="220" r="189" fill="#111111" mask="url(#m)"/>
+  <path d="M230 390 C 300 420, 360 440, 470 430" fill="none" stroke="#111111" stroke-width="38" stroke-linecap="round"/>
 </svg>

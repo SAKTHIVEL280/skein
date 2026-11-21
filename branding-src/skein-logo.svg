@@ -1,9 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="64" height="64">
-  <!-- Skein mark: one thread drawn as an S, its loose end a single knot.
-       White disc with a black rim, transparent outside, so it reads on light
-       and dark desktops alike. Flat: two colours, no gradients. -->
-  <circle cx="256" cy="256" r="234" fill="#ffffff" stroke="#0a0a0a" stroke-width="32"/>
-  <path d="M 326 150 H 216 A 53 53 0 0 0 216 256 H 296 A 53 53 0 0 1 296 362 H 178"
-        fill="none" stroke="#0a0a0a" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="384" cy="150" r="24" fill="#0a0a0a"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Skein: a ball of yarn unwinding its thread. One colour, transparent. -->
+  <defs><clipPath id="b"><circle cx="230" cy="220" r="170"/></clipPath></defs>
+  <g fill="none" stroke="#111111" stroke-width="38" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="230" cy="220" r="170"/>
+    <g clip-path="url(#b)">
+      <path d="M40 150 C 150 110, 300 170, 360 330"/>
+      <path d="M90 60 C 210 40, 360 120, 420 250"/>
+      <path d="M40 260 C 130 230, 230 300, 260 420"/>
+    </g>
+    <path d="M230 390 C 300 420, 360 440, 470 430"/>
+  </g>
 </svg>

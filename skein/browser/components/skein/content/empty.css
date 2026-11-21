@@ -63,3 +63,10 @@ kbd {
   font: 11px system-ui, sans-serif;
   color: var(--muted);
 }
+
+/* The logo is a one-colour glyph; keep it visible on a dark page. */
+@media (prefers-color-scheme: dark) {
+  img {
+    filter: invert(1);
+  }
+}
