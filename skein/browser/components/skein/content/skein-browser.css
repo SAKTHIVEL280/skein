@@ -234,70 +234,42 @@ tab-group[skein-space-hidden] {
 }
 
 :root:is([skein-compact], [skein-sidebar-hidden]):not([inFullscreen], [customizing]) {
-  sidebar-main {
-    position: fixed;
+  :is(:root:not([skein-sidebar-toolbar]) sidebar-main, :root[skein-sidebar-toolbar] #sidebar-container) {
+    position: fixed !important;
     top: 0;
     bottom: 0;
     inset-inline-start: 0;
     z-index: 11;
+    width: var(--skein-sidebar-width, 260px);
+    padding-block: 4px;
     translate: calc(-100% + 6px) 0;
-    transition: translate 180ms ease, box-shadow 180ms ease;
+    opacity: 0.001;
+    transition:
+      translate 260ms cubic-bezier(0.32, 0.72, 0, 1) 240ms,
+      opacity 160ms ease 300ms,
+      box-shadow 260ms ease 240ms;
     background-color: var(--skein-zen-frame, var(--toolbar-bgcolor));
-    border-radius: 0 10px 10px 0;
+    border-start-end-radius: 12px;
+    border-end-end-radius: 12px;
 
     &:hover,
-    &:focus-within {
+    &:focus-within,
+    &:has([open], [panelopen]) {
       translate: 0 0;
-      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+      opacity: 1;
+      transition-delay: 0ms;
+      box-shadow: rgba(0, 0, 0, 0.28) 0 12px 40px;
     }
   }
 
   #tabbrowser-tabbox {
     margin-inline-start: 8px;
   }
-}
 
-/* Focus: floating new-tab bar */
-
-#skein-newtab-bar {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 22vh;
-  background: rgba(0, 0, 0, 0.18);
-
-  &[hidden] {
-    display: none;
-  }
-
-  .skein-newtab-box {
-    width: min(640px, calc(100vw - 32px));
-    padding: 10px;
-    border-radius: 14px;
-    background: light-dark(#ffffff, #2a2930);
-    color: light-dark(#1b1a20, #ece9f2);
-    box-shadow: rgba(0, 0, 0, 0.3) 0 10px 40px;
-  }
-
-  input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 14px;
-    border: none;
-    border-radius: 10px;
-    font-size: 17px;
-    background: light-dark(#f1f0f5, #1f1e25);
-    color: inherit;
-    outline: none;
-  }
-
-  .skein-newtab-hint {
-    padding: 8px 4px 0;
-    font-size: 11px;
-    opacity: 0.6;
+  /* The address bar renders in the top layer, outside the sidebar's fade. */
+  &[skein-sidebar-toolbar] #sidebar-container:not(:hover, :focus-within, :has([open], [panelopen])) #urlbar:not([focused], [breakout-extend]) {
+    opacity: 0;
+    transition: opacity 120ms ease 300ms;
   }
 }
 
@@ -338,6 +310,7 @@ tab-group[skein-space-hidden] {
   }
 
   #sidebar-button {
+    order: -1;
     margin-inline-start: 32px !important;
   }
 
@@ -348,37 +321,65 @@ tab-group[skein-space-hidden] {
     max-width: 100%;
   }
 
-  #nav-bar-customization-target {
-    flex-wrap: wrap;
-    row-gap: 6px;
+  #sidebar-container {
+    position: relative;
   }
 
-  #nav-bar :is(#firefox-view-button, #alltabs-button, .titlebar-spacer, #customizableui-special-spring1, #customizableui-special-spring2) {
+  /* One row of buttons. The site line and the Spaces switcher are absolutely
+   * positioned so the toolbar's overflow logic never pushes them into the
+   * >> menu. */
+  #nav-bar {
+    position: static !important;
+    padding-bottom: 38px;
+  }
+
+  #nav-bar :is(#firefox-view-button, #alltabs-button, #vertical-spacer, #nav-bar-overflow-button, .titlebar-spacer, #customizableui-special-spring1, #customizableui-special-spring2) {
     display: none;
   }
 
-  #skein-spaces-widget {
-    order: 100;
-    flex: 1 1 100%;
-    justify-content: center;
-    margin: 0 !important;
-  }
-
   #urlbar-container {
-    order: 99;
-    flex: 1 1 100% !important;
-    width: 100% !important;
+    position: absolute !important;
+    top: 44px;
+    inset-inline: 6px;
+    width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
-    margin-inline: 0 !important;
-    padding-inline: 4px !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
+  #skein-spaces-widget {
+    position: absolute !important;
+    bottom: 8px;
+    inset-inline-end: 8px;
+    max-width: calc(100% - 128px);
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 !important;
+    z-index: 2;
+  }
+
+  /* Unfocused, the address field is not a search box: just the padlock and
+   * the site, as quiet text. Click it (or Ctrl+L / Ctrl+T) to search. */
   #urlbar:not([breakout-extend], [focused]) {
-    --urlbar-height: 34px;
+    --urlbar-height: 30px;
+    --urlbar-min-height: 30px;
+    font-size: 12px;
+    cursor: default;
+
+    --toolbar-field-background-color: var(--skein-field-bg, transparent);
+    --toolbar-field-border-color: var(--skein-field-border, transparent);
 
     .urlbar-background {
-      border-radius: 10px;
+      box-shadow: none;
+    }
+
+    &:hover {
+      --toolbar-field-background-color: color-mix(in srgb, currentColor 7%, transparent);
+    }
+
+    :is(#page-action-buttons, .urlbar-go-button, #urlbar-searchmode-switcher, .searchmode-switcher) {
+      display: none !important;
     }
   }
 
@@ -389,10 +390,14 @@ tab-group[skein-space-hidden] {
     left: calc(50vw - min(340px, 45vw)) !important;
     width: min(680px, 90vw) !important;
     z-index: 100;
+    --urlbar-height: 44px;
+    font-size: 15px;
+    animation: skein-float-in 180ms cubic-bezier(0.2, 0.9, 0.3, 1);
 
     .urlbar-background {
       border-radius: 14px;
-      box-shadow: rgba(0, 0, 0, 0.3) 0 10px 40px !important;
+      border-color: color-mix(in srgb, currentColor 12%, transparent) !important;
+      box-shadow: rgba(0, 0, 0, 0.32) 0 18px 48px, rgba(0, 0, 0, 0.12) 0 2px 6px !important;
     }
   }
 
@@ -400,9 +405,10 @@ tab-group[skein-space-hidden] {
     content: "";
     position: fixed;
     inset: -100vh -100vw;
-    background: rgba(0, 0, 0, 0.18);
+    background: rgba(0, 0, 0, 0.22);
     z-index: -1;
     pointer-events: none;
+    animation: skein-fade-in 180ms ease-out;
   }
 
   #tabbrowser-tabbox {
@@ -499,5 +505,29 @@ tab-group[skein-space-hidden] {
     font: 12px system-ui, sans-serif;
     box-shadow: rgba(0, 0, 0, 0.25) 0 2px 8px;
     cursor: pointer;
+  }
+}
+
+@keyframes skein-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+}
+
+@keyframes skein-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #urlbar,
+  #urlbar::before,
+  sidebar-main,
+  #sidebar-container,
+  #navigator-toolbox {
+    animation: none !important;
+    transition: none !important;
   }
 }

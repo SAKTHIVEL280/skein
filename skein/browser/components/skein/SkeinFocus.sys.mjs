@@ -5,8 +5,8 @@
 /**
  * Focus features modelled on Zen Browser:
  *  - compact mode: sidebar and toolbar hide and slide back in at the edges
- *  - floating new-tab bar: Ctrl+T and the new-tab button open a centered
- *    search field; what you type becomes the new tab
+ *  - floating new-tab bar: Ctrl+T and the new-tab button float the real
+ *    address bar over the page; what you pick opens in a new tab
  *  - sidebar toolbar: with vertical tabs the navigation toolbar lives at the
  *    top of the sidebar and the top of the window only holds bookmarks
  *    (skein.ui.topSearchBar restores the classic top bar)
@@ -63,13 +63,20 @@ export const SkeinFocus = {
     this._initGlance(win);
     this._initLayout(win);
     this._initEmptyState(win);
-    if (!Services.prefs.getBoolPref("skein.focus.placedSidebarButton", false)) {
-      Services.prefs.setBoolPref("skein.focus.placedSidebarButton", true);
-      try {
-        win.CustomizableUI.addWidgetToArea("sidebar-button", win.CustomizableUI.AREA_NAVBAR, 0);
-      } catch (e) {
-        console.error("Skein: placing sidebar button failed", e);
-      }
+    if (!Services.prefs.getBoolPref("skein.focus.toolbarOrder", false)) {
+      Services.prefs.setBoolPref("skein.focus.toolbarOrder", true);
+      const CUI = win.CustomizableUI;
+      ["sidebar-button", "back-button", "forward-button", "stop-reload-button"].forEach((id, i) => {
+        try {
+          if (CUI.getPlacementOfWidget(id)?.area === CUI.AREA_NAVBAR) {
+            CUI.moveWidgetWithinArea(id, i);
+          } else {
+            CUI.addWidgetToArea(id, CUI.AREA_NAVBAR, i);
+          }
+        } catch (e) {
+          console.error(`Skein: placing ${id} failed`, e);
+        }
+      });
     }
     win.addEventListener("command", e => this._onCommand(win, e), true);
     win.addEventListener("keydown", e => this._onKey(win, e), true);
@@ -282,75 +289,48 @@ export const SkeinFocus = {
     e.stopPropagation();
   },
 
-  _ensureBar(win) {
-    const doc = win.document;
-    let bar = doc.getElementById("skein-newtab-bar");
-    if (bar) {
-      return bar;
-    }
-    const H = tag => doc.createElementNS("http://www.w3.org/1999/xhtml", tag);
-    bar = H("div");
-    bar.id = "skein-newtab-bar";
-    bar.hidden = true;
-    const box = H("div");
-    box.className = "skein-newtab-box";
-    const input = H("input");
-    input.type = "text";
-    input.placeholder = "Search or enter address";
-    input.setAttribute("aria-label", "Open a new tab");
-    const hint = H("div");
-    hint.className = "skein-newtab-hint";
-    hint.textContent = "Enter opens a new tab · Esc cancels";
-    box.append(input, hint);
-    bar.append(box);
-    bar.addEventListener("mousedown", e => {
-      if (e.target === bar) {
-        this.hideBar(win);
-      }
-    });
-    input.addEventListener("keydown", e => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        this.hideBar(win);
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        this._open(win, input.value);
-      }
-    });
-    doc.documentElement.append(bar);
-    return bar;
-  },
-
+  /**
+   * New tab opens the real address bar, floating over the page, with the
+   * same autofill, suggestions and search engine as Ctrl+L. Whatever is
+   * picked opens in a new tab; Esc or clicking away leaves things as they were.
+   */
   showBar(win) {
-    const bar = this._ensureBar(win);
-    const input = bar.querySelector("input");
-    input.value = "";
-    bar.hidden = false;
-    win.requestAnimationFrame(() => input.focus());
+    const urlbar = win.gURLBar;
+    const root = win.document.documentElement;
+    if (!urlbar._skeinNewTabHooked) {
+      urlbar._skeinNewTabHooked = true;
+      const where = urlbar._whereToOpen.bind(urlbar);
+      urlbar._whereToOpen = event => {
+        const w = where(event);
+        return root.hasAttribute("skein-newtab-mode") && w === "current" && !win.gBrowser.selectedTab.hasAttribute("skein-empty") ? "tab" : w;
+      };
+      const exit = () => {
+        if (root.hasAttribute("skein-newtab-mode")) {
+          root.removeAttribute("skein-newtab-mode");
+          urlbar.handleRevert();
+        }
+      };
+      urlbar.inputField.addEventListener("blur", () => win.setTimeout(exit, 0));
+      urlbar.inputField.addEventListener(
+        "keydown",
+        e => {
+          if (e.key === "Escape" && root.hasAttribute("skein-newtab-mode") && !urlbar.view.isOpen) {
+            e.preventDefault();
+            exit();
+            win.gBrowser.selectedBrowser.focus();
+          }
+        },
+        true
+      );
+    }
+    root.setAttribute("skein-newtab-mode", "true");
+    urlbar.value = "";
+    urlbar.focus();
+    urlbar.select();
+    urlbar.startQuery?.({ allowAutofill: false });
   },
 
   hideBar(win) {
-    const bar = win.document.getElementById("skein-newtab-bar");
-    if (bar) {
-      bar.hidden = true;
-    }
-  },
-
-  _open(win, text) {
-    this.hideBar(win);
-    text = text.trim();
-    let url = null;
-    if (text) {
-      try {
-        const info = Services.uriFixup.getFixupURIInfo(
-          text,
-          Ci.nsIURIFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS | Ci.nsIURIFixup.FIXUP_FLAG_ALLOW_KEYWORD_LOOKUP
-        );
-        url = info.preferredURI?.spec || null;
-      } catch (e) {
-        url = null;
-      }
-    }
-    win.BrowserCommands.openTab(url ? { url } : {});
+    win.document.documentElement.removeAttribute("skein-newtab-mode");
   },
 };
