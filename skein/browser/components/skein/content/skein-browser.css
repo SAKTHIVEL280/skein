@@ -772,3 +772,36 @@ tab-group[skein-space-hidden] {
     }
   }
 }
+
+/* Tab feel, ported from Zen (zen-browser/desktop, MPL-2.0,
+ * src/zen/tabs/zen-tabs/vertical-tabs.css): tabs press in slightly when
+ * clicked, their buttons a little more; favicons get soft corners. */
+@media -moz-pref("skein.ui.zen") {
+  #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab {
+    transition: scale 100ms ease;
+
+    .tab-content > :is(image, .tab-close-button) {
+      transition: scale 100ms ease;
+    }
+
+    #tabbrowser-tabs:not([movingtab]) &:active:not(:has(.tab-content > :is(image, .tab-close-button):active)) {
+      scale: 0.98;
+      rotate: 0.01deg;
+    }
+
+    #tabbrowser-tabs:not([movingtab]) & .tab-content > :is(image, .tab-close-button):active {
+      scale: 0.97;
+    }
+
+    .tab-icon-image {
+      border-radius: 4px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #tabbrowser-tabs .tabbrowser-tab,
+  #tabbrowser-tabs .tab-content > image {
+    transition: none !important;
+  }
+}

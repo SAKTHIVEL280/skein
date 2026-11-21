@@ -313,7 +313,8 @@ export const SkeinFocus = {
     const check = () => {
       const tabs = win.gBrowser.tabs.filter(t => !t.closing);
       const t = tabs[0];
-      const restoring = t.hasAttribute("pending") || !!t.linkedBrowser.userTypedValue;
+      const browser = t.linkedBrowser;
+      const restoring = t.hasAttribute("pending") || !!browser.userTypedValue || browser.webProgress?.isLoadingDocument;
       if (tabs.length === 1 && !t.pinned && !restoring && !t.hasAttribute("skein-empty") && win.isBlankPageURL(t.linkedBrowser.currentURI.spec)) {
         this._makeEmpty(win, t);
       }
