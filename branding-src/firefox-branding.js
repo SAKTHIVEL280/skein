@@ -101,6 +101,8 @@ pref("skein.ui.zen", true);
 
 // Focus features (SkeinFocus.sys.mjs).
 pref("browser.tabs.closeWindowWithLastTab", false);
+// A new window opens on the calm empty page (hidden from the tab list), as in Zen.
+pref("browser.startup.homepage", "chrome://browser/content/skein/empty.html");
 pref("browser.ctrlTab.sortByRecentlyUsed", true);
 pref("browser.toolbars.bookmarks.visibility", "never");
 pref("skein.ui.topSearchBar", false);

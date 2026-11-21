@@ -616,7 +616,7 @@ export const SkeinCustomization = {
       if (layout.tabs.expanded !== undefined) {
         if (Services.prefs.getBoolPref("skein.ui.zen", true)) {
           target["sidebar.visibility"] = "always-show";
-          target["skein.focus.sidebarHidden"] = !layout.tabs.expanded;
+          target["skein.focus.compact"] = !layout.tabs.expanded;
         } else {
           target["sidebar.visibility"] = layout.tabs.expanded ? "always-show" : "expand-on-hover";
         }

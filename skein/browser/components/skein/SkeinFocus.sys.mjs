@@ -64,7 +64,6 @@ export const SkeinFocus = {
     this._initGlance(win);
     this._initLayout(win);
     this._initEmptyState(win);
-    this._emptyOnStartup(win);
     this._initTopBar(win);
     if (!Services.prefs.getBoolPref("skein.focus.toolbarOrder", false)) {
       Services.prefs.setBoolPref("skein.focus.toolbarOrder", true);
@@ -87,14 +86,13 @@ export const SkeinFocus = {
 
   /**
    * Firefox's own "expand on hover" collapses the sidebar to icons and fights
-   * Skein's hover reveal. In the Zen layout, Skein's hidden-until-hover
-   * sidebar does that job, so the setting is translated into it.
+   * Skein's hover reveal; in the Zen layout it is switched back to a normal
+   * sidebar. Compact mode (Ctrl+Alt+C) is the hide-until-hover option.
    */
   _adoptExpandOnHover() {
     const convert = () => {
       if (Services.prefs.getBoolPref("skein.ui.zen", true) && Services.prefs.getStringPref("sidebar.visibility", "") === "expand-on-hover") {
         Services.prefs.setStringPref("sidebar.visibility", "always-show");
-        Services.prefs.setBoolPref(PREF_HIDE_SIDEBAR, true);
       }
     };
     if (!this._watchingVisibility) {
@@ -260,6 +258,12 @@ export const SkeinFocus = {
       b.addEventListener("click", fn);
       buttons.append(b);
     };
+    const toggle = H("button");
+    toggle.className = "skein-topbar-sidebar";
+    toggle.title = "Show or hide the sidebar (Ctrl+Alt+B)";
+    toggle.setAttribute("aria-label", "Show or hide the sidebar");
+    toggle.addEventListener("click", () => togglePref(PREF_HIDE_SIDEBAR));
+    bar.prepend(toggle);
     add("skein-win-min", "Minimize", () => win.minimize());
     add("skein-win-max", "Maximize", toggleMaximize);
     add("skein-win-close", "Close window", e => win.BrowserCommands.tryToCloseWindow(e));
@@ -285,46 +289,35 @@ export const SkeinFocus = {
     });
     gBrowser.addTabsProgressListener({
       onLocationChange(browser, webProgress, request, location) {
-        if (!webProgress.isTopLevel || location.spec === EMPTY_URL) {
+        if (!webProgress.isTopLevel) {
           return;
         }
         const tab = gBrowser.getTabForBrowser(browser);
+        // The empty page (also the home page) never shows as a tab.
+        if (location.spec === EMPTY_URL) {
+          tab?.setAttribute("skein-empty", "true");
+          return;
+        }
         if (tab?.hasAttribute("skein-empty") && !win.isBlankPageURL(location.spec)) {
           tab.removeAttribute("skein-empty");
         }
       },
     });
+    // A restored tab reuses the start tab; it is no longer the empty page.
+    gBrowser.tabContainer.addEventListener("SSTabRestoring", e => e.target.removeAttribute("skein-empty"));
     gBrowser.tabContainer.addEventListener("TabOpen", e => {
       if (e.target.hasAttribute("skein-empty")) {
         return;
       }
       win.setTimeout(() => {
-        for (const t of gBrowser.tabs.filter(x => x.hasAttribute("skein-empty") && !x.closing)) {
+        const isEmpty = x => x.hasAttribute("skein-empty") && !x.closing && !x.hasAttribute("pending") && x.linkedBrowser.currentURI.spec === EMPTY_URL && !x.linkedBrowser.webProgress?.isLoadingDocument;
+        for (const t of gBrowser.tabs.filter(isEmpty)) {
           if (gBrowser.tabs.length > 1) {
             gBrowser.removeTab(t, { animate: false });
           }
         }
       }, 0);
     });
-  },
-
-  /** At app start, a window with just a blank new tab shows the empty page, as Zen does. */
-  _emptyOnStartup(win) {
-    const check = () => {
-      const tabs = win.gBrowser.tabs.filter(t => !t.closing);
-      const t = tabs[0];
-      const browser = t.linkedBrowser;
-      const restoring = t.hasAttribute("pending") || !!browser.userTypedValue || browser.webProgress?.isLoadingDocument;
-      if (tabs.length === 1 && !t.pinned && !restoring && !t.hasAttribute("skein-empty") && win.isBlankPageURL(t.linkedBrowser.currentURI.spec)) {
-        this._makeEmpty(win, t);
-      }
-    };
-    if (this._startupHandled || win.SessionStore.willAutoRestore || win.PrivateBrowsingUtils?.isWindowPrivate(win)) {
-      this._startupHandled = true;
-      return;
-    }
-    this._startupHandled = true;
-    win.SessionStore.promiseAllWindowsRestored.then(() => win.setTimeout(check, 0));
   },
 
   _makeEmpty(win, tab) {

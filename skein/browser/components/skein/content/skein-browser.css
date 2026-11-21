@@ -448,9 +448,10 @@ tab-group[skein-space-hidden] {
 @media -moz-pref("skein.ui.zen") {
   #tabbrowser-tabs[orient="vertical"][expanded] #vertical-pinned-tabs-container {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-    gap: 6px;
-    padding: 4px 2px 10px;
+    /* Zen: up to four tiles a row (zen-tabs/vertical-tabs.css, MPL-2.0). */
+    grid-template-columns: repeat(auto-fit, minmax(max(23.7%, 48px), 1fr));
+    gap: 4px;
+    padding: 4px 2px 8px;
 
     .tabbrowser-tab {
       width: auto !important;
@@ -458,20 +459,20 @@ tab-group[skein-space-hidden] {
       padding: 0 !important;
 
       .tab-background {
-        min-height: 46px;
+        min-height: 44px;
         margin: 0 !important;
-        border-radius: 12px;
+        border-radius: 8px;
         background-color: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.07));
       }
 
       &[selected] .tab-background {
-        background-color: light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.2));
+        background-color: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));
         box-shadow: 0 0.8px 1.5px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05));
       }
 
       .tab-content {
         justify-content: center;
-        min-height: 46px;
+        min-height: 44px;
       }
     }
   }
@@ -804,4 +805,28 @@ tab-group[skein-space-hidden] {
   #tabbrowser-tabs .tab-content > image {
     transition: none !important;
   }
+}
+
+/* A hidden sidebar always leaves a visible grip at its edge, so it can be
+ * found again; the top bar also has a sidebar button. */
+:root:is([skein-compact], [skein-sidebar-hidden]):not([inFullscreen], [customizing]) :is(:root[skein-sidebar-toolbar] #sidebar-container, :root:not([skein-sidebar-toolbar]) sidebar-main)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 2px;
+  width: 4px;
+  height: 56px;
+  margin-top: -28px;
+  border-radius: 2px;
+  background: color-mix(in srgb, currentColor 35%, transparent);
+  transition: opacity 160ms ease;
+}
+
+:root:is([skein-compact], [skein-sidebar-hidden]) :is(#sidebar-container, sidebar-main):is(:hover, :focus-within)::after {
+  opacity: 0;
+}
+
+#skein-topbar .skein-topbar-sidebar {
+  margin-inline-start: 8px;
+  background-image: url("chrome://browser/skin/sidebar-collapsed.svg");
 }
