@@ -5,5 +5,3 @@ __pycache__/
 .mozbuild/
 dist/
 *.log
-bench/
-zen-ref/

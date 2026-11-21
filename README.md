@@ -58,17 +58,22 @@ Reproduce it: `python3 scripts/dev/demo.py`.
 
 ## Focus features
 
-- Zen-style layout: vertical tabs in a sidebar, page in a floating card. The
-  address bar lives at the top of the sidebar and floats over the page when
-  focused; the top of the window is only for bookmarks
-  (`skein.ui.topSearchBar` brings the classic top bar back).
+- Zen-style layout: vertical tabs in a sidebar, page in a floating card.
+  The sidebar has no search box: under the navigation buttons it shows only
+  the padlock and the site you are on. Click it, press `Ctrl+L`, or press
+  `Ctrl+T` and the real address bar floats over the page. The top of the
+  window is only for bookmarks (`skein.ui.topSearchBar` brings the classic
+  top bar back).
 - Essentials: pinned tabs show as tiles at the top of the sidebar; drag a tab
-  there to keep it.
-- Compact mode (`Ctrl+Alt+C`): sidebar and toolbar hide and slide in when
-  you move the mouse to the left or top edge. `Ctrl+Alt+B` hides only the
-  sidebar.
-- New tab (`Ctrl+T` or the + button) opens a floating search bar; what you
-  type opens in the new tab. Turn off with `skein.focus.floatingNewTab`.
+  there to keep it. Spaces sit at the bottom of the sidebar, one dot per
+  space, the active one filled.
+- Compact mode (`Ctrl+Alt+C`): the whole sidebar slides away and comes back
+  when you move the mouse to the left edge. `Ctrl+Alt+B` or the sidebar
+  button does the same for the sidebar alone.
+- New tab (`Ctrl+T` or the + button) floats the address bar, with the same
+  autofill, history, bookmarks and search suggestions as `Ctrl+L`; what you
+  pick opens in a new tab and Esc leaves things as they were. Turn off with
+  `skein.focus.floatingNewTab`.
 - Glance: right-click a link → Open in Glance to preview it in a floating
   card; Open as tab keeps it, Esc closes it.
 - `Ctrl+Tab` switches to the most recently used tab; hold it to see all tabs.
@@ -93,6 +98,23 @@ There are no release downloads yet. Build from source:
 
 Then open `about:skein`, copy the customization folder path, start your agent
 in that folder and ask for a change.
+
+## Project layout
+
+| Path | What |
+|---|---|
+| `skein/` | Skein's source: an overlay of new files copied into the Firefox tree |
+| `patches/`, `PATCHES.md` | The few edits to upstream Firefox files |
+| `branding-src/` | Logo sources; `scripts/make-branding.sh` renders every icon from them |
+| `mozconfigs/` | Build configurations (Linux, Windows, cross-compile, release) |
+| `scripts/` | `apply.sh` (overlay + patches), `run.sh` (launch the dev build), `dev/` (tests, demo, benchmark) |
+| `docs/`, `examples/` | Documentation and an example customization folder |
+| `engine/`, `obj-*/` | Firefox checkout and build output. Not in git |
+
+Run the build you just made with `scripts/run.sh`. Do not launch copies under
+`obj-skein/dist/skein/` or the packaged archives: they are snapshots from the
+last `mach package` and are out of date as soon as you rebuild. Each copy also
+counts as a separate installation, so it opens its own profile.
 
 ## How it is built
 

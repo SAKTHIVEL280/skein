@@ -1,6 +1,6 @@
 # Zen parity tracker
 
-What Skein takes from Zen Browser's UI (reference checkout: `zen-ref/`,
+What Skein takes from Zen Browser's UI (reference checkout kept outside the repo,
 github.com/zen-browser/desktop, MPL-2.0), and where Skein goes further.
 Each "done" item is covered by `scripts/dev/test_skein.py` unless noted.
 
@@ -10,16 +10,17 @@ Each "done" item is covered by `scripts/dev/test_skein.py` unless noted.
 |---|---|---|
 | Vertical tabs in a sidebar | Firefox vertical tabs on by default, Zen styling | `sidebar.verticalTabs` |
 | Page as a floating card | Rounded content with Zen's shadow and 8px gap | `skein.ui.zen` |
-| No top search bar | Navigation toolbar moves to the top of the sidebar; top of the window only holds bookmarks | `skein.ui.topSearchBar` (false) |
+| No search bar in the sidebar | Navigation buttons at the top of the sidebar, then only the padlock and site as quiet text; the real address bar floats when you click it | `skein.ui.topSearchBar` (false) |
 | Floating address bar | Focusing the address field floats it centered over the page | — |
 | Menu and sidebar toggle at top left | ⋯ menu, then the sidebar button, which slides the sidebar out | sidebar button, `Ctrl+Alt+B` |
-| Compact mode | Sidebar and toolbar hide; reveal at the window edges | `Ctrl+Alt+C` |
-| Floating new-tab bar | `Ctrl+T` / + opens a centered search field; Enter opens the tab | `skein.focus.floatingNewTab` |
+| Compact mode | Whole sidebar column slides out, returns at the left edge with a short hide delay | `Ctrl+Alt+C` |
+| Floating new-tab bar | `Ctrl+T` / + floats the real address bar (autofill, suggestions, default engine); the pick opens in a new tab | `skein.focus.floatingNewTab` |
+| Search results like Firefox/Zen | User agent says `Firefox/<version>`, so Google serves its full page (speed test and other widgets) | patch 0005 |
 | Essentials (pinned tiles) | Pinned tabs shown as a tile grid; drag a tab up to pin it | drag, or right-click → Pin |
 | Close the last tab | Window stays open and shows an empty home page; no stray "New Tab" in the sidebar | `browser.tabs.closeWindowWithLastTab` (false) |
 | Recent-tab switching | Quick `Ctrl+Tab` flips to the last tab; hold to see all tabs | `browser.ctrlTab.sortByRecentlyUsed` |
 | Glance | Right-click a link → Open in Glance: floating card over a dimmed page; Open as tab / Close / Esc | context menu |
-| Workspaces | Skein Spaces, shown as a row under the address field | Spaces widget |
+| Workspaces | Skein Spaces, at the bottom of the sidebar like Zen; never pushed into the >> menu | Spaces widget |
 
 ## Better than Zen
 
