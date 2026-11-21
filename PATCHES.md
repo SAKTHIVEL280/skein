@@ -27,6 +27,7 @@ The component hooks into browser windows through the category manager
 | `0002-about-skein.patch` | `browser/components/about/AboutRedirector.cpp`, `components.conf` | Registers `about:skein` (parent-process chrome page). About pages are a static C++ table, so this cannot be done from the overlay. Also points `about:rights` at the bundled open-source licences page instead of Mozilla's Firefox terms of use, which do not apply to Skein. |
 | `0003-space-container-for-new-tabs.patch` | `browser/base/content/browser-commands.js` | When the active space is bound to a container, the New Tab command opens the tab in that container. Hooked at the command (not `addTab`) so session restore and links are unaffected. |
 | `0004-vendor-and-normandy.patch` | `browser/moz.configure` | `MOZ_APP_VENDOR` "Mozilla" -> "Skein" (profile location, no Mozilla naming); `MOZ_NORMANDY` off (no remote studies/experiments client in the build). `MOZ_APP_ID` is deliberately unchanged so add-ons that target Firefox install. |
+| `0005-firefox-in-user-agent.patch` | `toolkit/moz.configure` | User agent ends in `Firefox/<version>` instead of `Skein/<version>` (same as Zen and LibreWolf). Google and other sites serve a reduced page, without widgets such as the speed test, to browsers they do not recognise. |
 
 `scripts/apply.sh` also replaces the hard-coded product name in
 `browser/locales/en-US/chrome/overrides/appstrings.properties` (network error
