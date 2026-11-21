@@ -10,10 +10,11 @@ Each "done" item is covered by `scripts/dev/test_skein.py` unless noted.
 |---|---|---|
 | Vertical tabs in a sidebar | Firefox vertical tabs on by default, Zen styling | `sidebar.verticalTabs` |
 | Page as a floating card | Rounded content with Zen's shadow and 8px gap | `skein.ui.zen` |
-| No search bar in the sidebar | Navigation buttons at the top of the sidebar, then only the padlock and site as quiet text; the real address bar floats when you click it | `skein.ui.topSearchBar` (false) |
+| No search bar in the sidebar | Only navigation buttons at the top of the sidebar; the real address bar floats on Ctrl+L / Ctrl+T / + | `skein.ui.sidebarUrlbar` (false), `skein.ui.topSearchBar` (false) |
+| Empty start | A new window shows the empty page, no stray New Tab | — |
 | Floating address bar | Focusing the address field floats it centered over the page | — |
 | Menu and sidebar toggle at top left | ⋯ menu, then the sidebar button, which slides the sidebar out | sidebar button, `Ctrl+Alt+B` |
-| Compact mode | Whole sidebar column slides out, returns at the left edge with a short hide delay | `Ctrl+Alt+C` |
+| Compact mode | Sidebar glides out while the page widens; hover the edge to glide it back over the page; left or right side | `Ctrl+Alt+C` |
 | Floating new-tab bar | `Ctrl+T` / + floats the real address bar (autofill, suggestions, default engine); the pick opens in a new tab | `skein.focus.floatingNewTab` |
 | Search results like Firefox/Zen | User agent says `Firefox/<version>`, so Google serves its full page (speed test and other widgets) | patch 0005 |
 | Essentials (pinned tiles) | Pinned tabs shown as a tile grid; drag a tab up to pin it | drag, or right-click → Pin |

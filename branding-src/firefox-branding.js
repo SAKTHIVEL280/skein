@@ -108,6 +108,7 @@ pref("skein.focus.compact", false);
 pref("skein.focus.sidebarHidden", false);
 pref("skein.focus.floatingNewTab", true);
 pref("skein.ui.topBar", true);
+pref("skein.ui.sidebarUrlbar", false);
 pref("skein.ui.tabCloseButton", "hover");
 pref("skein.glance.altClick", true);
 pref("skein.agentSkills.install", true);

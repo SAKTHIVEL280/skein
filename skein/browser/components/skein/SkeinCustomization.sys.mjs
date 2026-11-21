@@ -925,6 +925,7 @@ export const SkeinCustomization = {
     try {
       utils.removeSheetUsingURIString(state.sheetURI, utils.AUTHOR_SHEET);
       utils.loadSheetUsingURIString(probe, utils.AGENT_SHEET);
+      win.document.documentElement.setAttribute("skein-integrity-probe", "true");
       const baseline = this._measure(win);
       utils.loadSheetUsingURIString(state.sheetURI, utils.AUTHOR_SHEET);
       const after = this._measure(win);
@@ -937,6 +938,7 @@ export const SkeinCustomization = {
     } catch (e) {
       problems.push({ selector: "", problem: `integrity check failed to run: ${e}` });
     } finally {
+      win.document.documentElement.removeAttribute("skein-integrity-probe");
       try {
         utils.removeSheetUsingURIString(probe, utils.AGENT_SHEET);
       } catch (e) {}
@@ -951,6 +953,18 @@ export const SkeinCustomization = {
    * Returns "ok", a problem string, or null when it cannot tell.
    */
   async _textLegibility(win) {
+    // Skein's sidebar layout tucks the address line away; show it while
+    // measuring so skills are judged against the real address bar.
+    const root = win.document.documentElement;
+    root.setAttribute("skein-integrity-probe", "true");
+    try {
+      return await this._textLegibilityNow(win);
+    } finally {
+      root.removeAttribute("skein-integrity-probe");
+    }
+  },
+
+  async _textLegibilityNow(win) {
     try {
       const el = win.document.getElementById("urlbar-input");
       const rect = el?.getBoundingClientRect();

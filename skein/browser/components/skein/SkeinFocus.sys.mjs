@@ -63,6 +63,7 @@ export const SkeinFocus = {
     this._initGlance(win);
     this._initLayout(win);
     this._initEmptyState(win);
+    this._emptyOnStartup(win);
     this._initTopBar(win);
     if (!Services.prefs.getBoolPref("skein.focus.toolbarOrder", false)) {
       Services.prefs.setBoolPref("skein.focus.toolbarOrder", true);
@@ -202,6 +203,17 @@ export const SkeinFocus = {
       home.parent.insertBefore(navbar, home.next);
     }
     doc.documentElement.toggleAttribute("skein-sidebar-toolbar", inSidebar);
+    if (!win._skeinWidthObserver) {
+      const root = doc.documentElement;
+      win._skeinWidthObserver = new win.ResizeObserver(entries => {
+        const w = Math.round(entries[0].borderBoxSize?.[0]?.inlineSize || entries[0].target.getBoundingClientRect().width);
+        if (w > 40) {
+          root.style.setProperty("--skein-sidebar-w", `${w}px`);
+        }
+      });
+    }
+    win._skeinWidthObserver.disconnect();
+    win._skeinWidthObserver.observe(inSidebar ? container : doc.querySelector("sidebar-main") || container);
   },
 
   /**
@@ -274,6 +286,22 @@ export const SkeinFocus = {
         }
       }, 0);
     });
+  },
+
+  /** A window that starts with just a blank new tab shows the empty page, as Zen does. */
+  _emptyOnStartup(win) {
+    const check = () => {
+      const tabs = win.gBrowser.tabs.filter(t => !t.closing);
+      const t = tabs[0];
+      const restoring = t.hasAttribute("pending") || !!t.linkedBrowser.userTypedValue;
+      if (tabs.length === 1 && !t.pinned && !restoring && !t.hasAttribute("skein-empty") && win.isBlankPageURL(t.linkedBrowser.currentURI.spec)) {
+        this._makeEmpty(win, t);
+      }
+    };
+    if (win.SessionStore.willAutoRestore) {
+      return;
+    }
+    win.SessionStore.promiseAllWindowsRestored.then(() => win.setTimeout(check, 0));
   },
 
   _makeEmpty(win, tab) {

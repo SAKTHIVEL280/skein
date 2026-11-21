@@ -233,44 +233,62 @@ tab-group[skein-space-hidden] {
   }
 }
 
+/* Hiding the sidebar (compact mode, sidebar button): the sidebar keeps its
+ * place in the layout and slides out with a negative margin, so the page
+ * widens smoothly instead of jumping. Hovering the left edge glides it back
+ * over the page with translate (no layout change). Width comes from
+ * SkeinFocus (--skein-sidebar-w). */
+:root[skein-sidebar-toolbar] #sidebar-container,
+:root:not([skein-sidebar-toolbar]) sidebar-main {
+  --skein-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  transition:
+    margin-inline-start 320ms var(--skein-ease),
+    translate 280ms var(--skein-ease),
+    box-shadow 280ms ease;
+}
+
 :root:is([skein-compact], [skein-sidebar-hidden]):not([inFullscreen], [customizing]) {
-  :is(:root:not([skein-sidebar-toolbar]) sidebar-main, :root[skein-sidebar-toolbar] #sidebar-container) {
-    position: fixed !important;
-    top: 0;
-    bottom: 0;
-    inset-inline-start: 0;
+  :is(:root[skein-sidebar-toolbar] #sidebar-container, :root:not([skein-sidebar-toolbar]) sidebar-main) {
+    position: relative;
     z-index: 11;
-    width: var(--skein-sidebar-width, 260px);
-    padding-block: 4px;
-    translate: calc(-100% + 6px) 0;
-    opacity: 0.001;
-    transition:
-      translate 260ms cubic-bezier(0.32, 0.72, 0, 1) 240ms,
-      opacity 160ms ease 300ms,
-      box-shadow 260ms ease 240ms;
+    margin-inline-start: calc(-1 * var(--skein-sidebar-w, 260px) + 8px);
     background-color: var(--skein-zen-frame, var(--toolbar-bgcolor));
     border-start-end-radius: 12px;
     border-end-end-radius: 12px;
+    transition:
+      margin-inline-start 320ms var(--skein-ease),
+      translate 280ms var(--skein-ease) 180ms,
+      box-shadow 280ms ease 180ms;
 
     &:hover,
     &:focus-within,
     &:has([open], [panelopen]) {
-      translate: 0 0;
-      opacity: 1;
-      transition-delay: 0ms;
+      translate: calc(var(--skein-sidebar-w, 260px) - 8px) 0;
       box-shadow: rgba(0, 0, 0, 0.28) 0 12px 40px;
+      transition-delay: 0ms;
+    }
+
+    /* Sidebar on the right: mirror everything. */
+    &[sidebar-positionend] {
+      margin-inline-start: 0;
+      margin-inline-end: calc(-1 * var(--skein-sidebar-w, 260px) + 8px);
+      border-radius: 12px 0 0 12px;
+
+      &:hover,
+      &:focus-within,
+      &:has([open], [panelopen]) {
+        translate: calc(-1 * var(--skein-sidebar-w, 260px) + 8px) 0;
+      }
     }
   }
+}
 
-  #tabbrowser-tabbox {
-    margin-inline-start: 8px;
-  }
-
-  /* The address bar renders in the top layer, outside the sidebar's fade. */
-  &[skein-sidebar-toolbar] #sidebar-container:not(:hover, :focus-within, :has([open], [panelopen])) #urlbar:not([focused], [breakout-extend]) {
-    opacity: 0;
-    transition: opacity 120ms ease 300ms;
-  }
+:root[skein-sidebar-toolbar] #sidebar-container[sidebar-positionend],
+:root:not([skein-sidebar-toolbar]) sidebar-main[sidebar-positionend] {
+  transition:
+    margin-inline-end 320ms var(--skein-ease),
+    translate 280ms var(--skein-ease),
+    box-shadow 280ms ease;
 }
 
 /* Zen-style top-left controls: menu (three dots) then the sidebar toggle. */
@@ -737,4 +755,20 @@ tab-group[skein-space-hidden] {
 #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab[skein-glance-opener] .tab-background {
   background-color: light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18));
   box-shadow: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05));
+}
+
+/* Like Zen without its URL field: no address line in the sidebar. Ctrl+L,
+ * Ctrl+T and the new-tab button float the address bar over the page.
+ * skein.ui.sidebarUrlbar brings the quiet address line back. */
+@media not -moz-pref("skein.ui.sidebarUrlbar") {
+  :root[skein-sidebar-toolbar]:not([skein-integrity-probe]) {
+    #nav-bar {
+      padding-bottom: 2px;
+    }
+
+    #urlbar:not([focused], [breakout-extend]) {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 }

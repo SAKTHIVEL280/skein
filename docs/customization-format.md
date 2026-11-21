@@ -98,6 +98,7 @@ Skein's own interface switches, all settable from a skill:
 |---|---|---|---|
 | `skein.ui.zen` | true / false | true | Zen-style layout (sidebar, floating page card) |
 | `skein.ui.topSearchBar` | true / false | false | Put the address bar back in a classic top toolbar |
+| `skein.ui.sidebarUrlbar` | true / false | false | Show a quiet address line (padlock + site) in the sidebar |
 | `skein.ui.topBar` | true / false | true | Hover top bar with the window buttons (minimize, maximize, close) |
 | `skein.ui.tabCloseButton` | `"hover"` / `"always"` / `"never"` | `"hover"` | When the tab close button (right side) shows |
 | `skein.focus.compact` | true / false | false | Compact mode: sidebar slides away, returns at the left edge |

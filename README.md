@@ -59,11 +59,11 @@ Reproduce it: `python3 scripts/dev/demo.py`.
 ## Focus features
 
 - Zen-style layout: vertical tabs in a sidebar, page in a floating card.
-  The sidebar has no search box: under the navigation buttons it shows only
-  the padlock and the site you are on. Click it, press `Ctrl+L`, or press
-  `Ctrl+T` and the real address bar floats over the page. The top of the
-  window is only for bookmarks (`skein.ui.topSearchBar` brings the classic
-  top bar back).
+  The sidebar has no search box or address field. Press `Ctrl+L`, `Ctrl+T`
+  or the + button and the real address bar floats over the page
+  (`skein.ui.sidebarUrlbar` adds a quiet padlock-and-site line back;
+  `skein.ui.topSearchBar` restores the classic top toolbar). A new window
+  opens on a calm empty page, not a "New Tab" entry.
 - Essentials: pinned tabs show as tiles at the top of the sidebar; drag a tab
   there to keep it. Each space has its own Essentials. Spaces sit at the
   bottom of the sidebar: one dot per space, the active one shows its name.
@@ -73,9 +73,10 @@ Reproduce it: `python3 scripts/dev/demo.py`.
 - Top bar: move the pointer to the top edge and a bar slides down with the
   window buttons (minimize, maximize, close); drag it to move the window,
   double-click to maximize (`skein.ui.topBar`).
-- Compact mode (`Ctrl+Alt+C`): the whole sidebar slides away and comes back
-  when you move the mouse to the left edge. `Ctrl+Alt+B` or the sidebar
-  button does the same for the sidebar alone.
+- Compact mode (`Ctrl+Alt+C`): the sidebar glides out and the page widens
+  with it; move the mouse to the sidebar's edge and it glides back over the
+  page. Works with the sidebar on either side. `Ctrl+Alt+B` or the sidebar
+  button hides the sidebar alone.
 - Split view (`Ctrl+Alt+V`): the current tab and the next one side by side,
   each as its own card; press again to separate. Also in the tab context menu.
 - New tab (`Ctrl+T` or the + button) floats the address bar, with the same

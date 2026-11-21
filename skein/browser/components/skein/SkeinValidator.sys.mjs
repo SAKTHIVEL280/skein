@@ -325,6 +325,7 @@ export const ALLOWED_PREFS = {
   "skein.ui.zen": "boolean",
   "skein.ui.topSearchBar": "boolean",
   "skein.ui.topBar": "boolean",
+  "skein.ui.sidebarUrlbar": "boolean",
   "skein.ui.tabCloseButton": ["hover", "always", "never"],
   "skein.focus.compact": "boolean",
   "skein.focus.sidebarHidden": "boolean",
