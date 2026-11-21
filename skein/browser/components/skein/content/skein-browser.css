@@ -193,7 +193,7 @@ tab-group[skein-space-hidden] {
     }
 
     #tabbrowser-tabpanels {
-      background-color: light-dark(#ffffff, #1c1b22);
+      background-color: var(--tabpanel-background-color, light-dark(#ffffff, #1c1b22));
     }
 
     #sidebar-box {
