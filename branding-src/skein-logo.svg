@@ -1,17 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="64" height="64">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2b2b2f"/>
-      <stop offset="1" stop-color="#050506"/>
-    </linearGradient>
-    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
-      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#bg)"/>
-  <rect x="17.5" y="17.5" width="477" height="477" rx="118.5" fill="none" stroke="url(#edge)" stroke-width="3"/>
-  <path d="M 340 148 H 206 A 57 57 0 0 0 206 262 H 306 A 57 57 0 0 1 306 376 H 172"
-        fill="none" stroke="#f5f5f7" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="394" cy="148" r="19" fill="#f5f5f7"/>
+  <!-- Skein mark: one thread drawn as an S, its loose end a single knot.
+       White disc with a black rim, transparent outside, so it reads on light
+       and dark desktops alike. Flat: two colours, no gradients. -->
+  <circle cx="256" cy="256" r="234" fill="#ffffff" stroke="#0a0a0a" stroke-width="32"/>
+  <path d="M 326 150 H 216 A 53 53 0 0 0 216 256 H 296 A 53 53 0 0 1 296 362 H 178"
+        fill="none" stroke="#0a0a0a" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="384" cy="150" r="24" fill="#0a0a0a"/>
 </svg>
