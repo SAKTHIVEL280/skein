@@ -84,7 +84,7 @@ across Firefox updates and cannot hide security UI.
 ### prefs.json
 
 ```json
-{ "prefs": { "browser.uidensity": 1, "sidebar.visibility": "expand-on-hover" } }
+{ "prefs": { "browser.uidensity": 1, "skein.focus.compact": true } }
 ```
 
 Only interface preferences on the allowlist in `SkeinValidator.sys.mjs`
@@ -102,7 +102,7 @@ Skein's own interface switches, all settable from a skill:
 | `skein.ui.topBar` | true / false | true | Hover top bar with the window buttons (minimize, maximize, close) |
 | `skein.ui.tabCloseButton` | `"hover"` / `"always"` / `"never"` | `"hover"` | When the tab close button (right side) shows |
 | `skein.focus.compact` | true / false | false | Compact mode: sidebar slides away, returns at the left edge |
-| `skein.focus.sidebarHidden` | true / false | false | Hide only the sidebar |
+| `skein.focus.sidebarHidden` | true / false | false | Hide only the sidebar; it glides back when the pointer reaches its edge. In the Zen layout, Firefox's `sidebar.visibility = "expand-on-hover"` and `layout.tabs.expanded: false` turn into this |
 | `skein.focus.floatingNewTab` | true / false | true | New tab floats the address bar instead of opening a page |
 | `skein.glance.altClick` | true / false | true | Alt+click a link opens it in Glance |
 | `skein.spaces.showLabels` | true / false | false | Show every space's full name in the switcher |

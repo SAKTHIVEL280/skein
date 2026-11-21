@@ -614,7 +614,12 @@ export const SkeinCustomization = {
         target["sidebar.position_start"] = Services.locale.isAppLocaleRTL ? !left : left;
       }
       if (layout.tabs.expanded !== undefined) {
-        target["sidebar.visibility"] = layout.tabs.expanded ? "always-show" : "expand-on-hover";
+        if (Services.prefs.getBoolPref("skein.ui.zen", true)) {
+          target["sidebar.visibility"] = "always-show";
+          target["skein.focus.sidebarHidden"] = !layout.tabs.expanded;
+        } else {
+          target["sidebar.visibility"] = layout.tabs.expanded ? "always-show" : "expand-on-hover";
+        }
       }
     }
     if (layout.toolbar) {

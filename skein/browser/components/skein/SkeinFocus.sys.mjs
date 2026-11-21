@@ -59,6 +59,7 @@ export const SkeinFocus = {
       Services.prefs.addObserver(PREF_TOP_BAR, relayout);
       Services.prefs.addObserver(PREF_VERTICAL, () => Services.tm.dispatchToMainThread(relayout));
     }
+    this._adoptExpandOnHover();
     syncRootAttrs(win);
     this._initGlance(win);
     this._initLayout(win);
@@ -82,6 +83,25 @@ export const SkeinFocus = {
     }
     win.addEventListener("command", e => this._onCommand(win, e), true);
     win.addEventListener("keydown", e => this._onKey(win, e), true);
+  },
+
+  /**
+   * Firefox's own "expand on hover" collapses the sidebar to icons and fights
+   * Skein's hover reveal. In the Zen layout, Skein's hidden-until-hover
+   * sidebar does that job, so the setting is translated into it.
+   */
+  _adoptExpandOnHover() {
+    const convert = () => {
+      if (Services.prefs.getBoolPref("skein.ui.zen", true) && Services.prefs.getStringPref("sidebar.visibility", "") === "expand-on-hover") {
+        Services.prefs.setStringPref("sidebar.visibility", "always-show");
+        Services.prefs.setBoolPref(PREF_HIDE_SIDEBAR, true);
+      }
+    };
+    if (!this._watchingVisibility) {
+      this._watchingVisibility = true;
+      Services.prefs.addObserver("sidebar.visibility", () => Services.tm.dispatchToMainThread(convert));
+    }
+    convert();
   },
 
   _initGlance(win) {
@@ -288,7 +308,7 @@ export const SkeinFocus = {
     });
   },
 
-  /** A window that starts with just a blank new tab shows the empty page, as Zen does. */
+  /** At app start, a window with just a blank new tab shows the empty page, as Zen does. */
   _emptyOnStartup(win) {
     const check = () => {
       const tabs = win.gBrowser.tabs.filter(t => !t.closing);
@@ -298,9 +318,11 @@ export const SkeinFocus = {
         this._makeEmpty(win, t);
       }
     };
-    if (win.SessionStore.willAutoRestore) {
+    if (this._startupHandled || win.SessionStore.willAutoRestore || win.PrivateBrowsingUtils?.isWindowPrivate(win)) {
+      this._startupHandled = true;
       return;
     }
+    this._startupHandled = true;
     win.SessionStore.promiseAllWindowsRestored.then(() => win.setTimeout(check, 0));
   },
 
