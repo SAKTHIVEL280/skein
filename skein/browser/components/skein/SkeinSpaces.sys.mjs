@@ -4,8 +4,8 @@
 
 /**
  * SkeinSpaces: switchable workspaces. Each tab belongs to one space; switching
- * spaces shows that space's tabs and hides the rest. Pinned tabs are shared
- * across spaces. Folders inside a space are upstream tab groups.
+ * spaces shows that space's tabs and hides the rest. Pinned tabs (Essentials)
+ * belong to a space too, so every space has its own Essentials. Folders inside a space are upstream tab groups.
  *
  * A space is organizational only. It is NOT a security boundary: isolation
  * comes from the container a space may be bound to (new tabs opened in the
@@ -214,7 +214,7 @@ export const SkeinSpaces = {
       state.lastTab.set(space, tab);
       // Selecting a tab from another space (tab search, "switch to tab")
       // brings its space with it.
-      if (!tab.pinned && space !== state.active) {
+      if (space !== state.active) {
         this.switchTo(win, space);
       }
     });
@@ -309,6 +309,8 @@ export const SkeinSpaces = {
         continue;
       }
       const space = this._tabSpace(win, tab);
+      // Pinned tabs cannot be hidden by tabbrowser; Skein's style hides them.
+      tab.toggleAttribute("skein-space-hidden", tab.pinned && space !== state.active);
       if (tab.pinned || space === state.active) {
         // Only un-hide what Skein hid; extensions may hide tabs too.
         if (tab.hidden && tab._skeinHidden) {
@@ -345,14 +347,23 @@ export const SkeinSpaces = {
       return;
     }
     const gBrowser = win.gBrowser;
+    if (state.active !== id) {
+      const from = this.spaces.findIndex(s => s.id === state.active);
+      const to = this.spaces.findIndex(s => s.id === id);
+      const root = win.document.documentElement;
+      root.setAttribute("skein-space-switch", to > from ? "next" : "prev");
+      win.clearTimeout(state.switchTimer);
+      state.switchTimer = win.setTimeout(() => root.removeAttribute("skein-space-switch"), 260);
+    }
+    state.previous = state.active;
     state.active = id;
     try {
       lazy.SessionStore.setCustomWindowValue(win, WINDOW_KEY, id);
     } catch (e) {}
 
     const selected = gBrowser.selectedTab;
-    if (!selected.pinned && this._tabSpace(win, selected) !== id) {
-      const inSpace = gBrowser.tabs.filter(t => !t.closing && !t.pinned && this._tabSpace(win, t) === id);
+    if (this._tabSpace(win, selected) !== id) {
+      const inSpace = gBrowser.tabs.filter(t => !t.closing && this._tabSpace(win, t) === id);
       let target = state.lastTab.get(id);
       if (!target || !inSpace.includes(target)) {
         target = inSpace[inSpace.length - 1];
@@ -400,7 +411,7 @@ export const SkeinSpaces = {
       return;
     }
     const gBrowser = win.gBrowser;
-    tabs = tabs.filter(t => !t.pinned && !t.closing);
+    tabs = tabs.filter(t => !t.closing);
     for (const tab of tabs) {
       this._setTabSpace(tab, id);
       // A folder belongs to one space; leaving the space leaves the folder.
@@ -409,7 +420,7 @@ export const SkeinSpaces = {
       }
     }
     if (id !== state.active && tabs.includes(gBrowser.selectedTab)) {
-      const stay = gBrowser.tabs.find(t => !t.closing && !tabs.includes(t) && (t.pinned || this._tabSpace(win, t) === state.active));
+      const stay = gBrowser.tabs.find(t => !t.closing && !tabs.includes(t) && this._tabSpace(win, t) === state.active);
       gBrowser.selectedTab = stay || gBrowser.addTrustedTab(win.BROWSER_NEW_TAB_URL, { userContextId: this.containerForNewTab(win) });
     }
     this._syncVisibility(win);
@@ -494,6 +505,10 @@ export const SkeinSpaces = {
       button.toggleAttribute("selected", space.id === active.id);
       button.setAttribute("aria-selected", space.id === active.id);
       button.toggleAttribute("show-label", showLabels);
+      if (space.id === active.id) {
+        button.setAttribute("label", space.name);
+        button.setAttribute("show-label", "true");
+      }
       button.addEventListener("command", () => this.switchTo(win, space.id));
       button.addEventListener("contextmenu", event => {
         event.preventDefault();
@@ -589,7 +604,7 @@ export const SkeinSpaces = {
       }
       const contextTab = win.TabContextMenu?.contextTab;
       const state = this._windows.get(win);
-      menu.hidden = !state || !contextTab || contextTab.pinned || this.spaces.length < 2;
+      menu.hidden = !state || !contextTab || this.spaces.length < 2;
       if (menu.hidden) {
         return;
       }

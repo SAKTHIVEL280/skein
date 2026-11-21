@@ -28,6 +28,17 @@ function guard(label, fn) {
 
 export const SkeinGlue = {
   browserFirstWindowReady() {
+    guard("glance actor", () =>
+      ChromeUtils.registerWindowActor("SkeinGlance", {
+        parent: { esModuleURI: "moz-src:///browser/components/skein/SkeinGlanceParent.sys.mjs" },
+        child: {
+          esModuleURI: "moz-src:///browser/components/skein/SkeinGlanceChild.sys.mjs",
+          events: { click: { capture: true, mozSystemGroup: true } },
+        },
+        messageManagerGroups: ["browsers"],
+        matches: ["http://*/*", "https://*/*"],
+      })
+    );
     guard("privacy init", () => lazy.SkeinPrivacy.browserFirstWindowReady());
     guard("customization init", () => lazy.SkeinCustomization.browserFirstWindowReady());
   },

@@ -65,17 +65,25 @@ Reproduce it: `python3 scripts/dev/demo.py`.
   window is only for bookmarks (`skein.ui.topSearchBar` brings the classic
   top bar back).
 - Essentials: pinned tabs show as tiles at the top of the sidebar; drag a tab
-  there to keep it. Spaces sit at the bottom of the sidebar, one dot per
-  space, the active one filled.
+  there to keep it. Each space has its own Essentials. Spaces sit at the
+  bottom of the sidebar: one dot per space, the active one shows its name.
+  Switching slides the tab list in from the side you are moving towards.
+- Tabs: the close button sits on the right and appears on hover
+  (`skein.ui.tabCloseButton`). An empty new tab shows a plain plus.
+- Top bar: move the pointer to the top edge and a bar slides down with the
+  window buttons (minimize, maximize, close); drag it to move the window,
+  double-click to maximize (`skein.ui.topBar`).
 - Compact mode (`Ctrl+Alt+C`): the whole sidebar slides away and comes back
   when you move the mouse to the left edge. `Ctrl+Alt+B` or the sidebar
   button does the same for the sidebar alone.
+- Split view (`Ctrl+Alt+V`): the current tab and the next one side by side,
+  each as its own card; press again to separate. Also in the tab context menu.
 - New tab (`Ctrl+T` or the + button) floats the address bar, with the same
   autofill, history, bookmarks and search suggestions as `Ctrl+L`; what you
   pick opens in a new tab and Esc leaves things as they were. Turn off with
   `skein.focus.floatingNewTab`.
-- Glance: right-click a link → Open in Glance to preview it in a floating
-  card; Open as tab keeps it, Esc closes it.
+- Glance: Alt+click a link (or right-click → Open in Glance) to preview it in
+  a floating card; Open as tab keeps it, Esc closes it.
 - `Ctrl+Tab` switches to the most recently used tab; hold it to see all tabs.
 - Closing the last tab keeps the window open on an empty home page.
 
@@ -95,6 +103,9 @@ are never overwritten. Turn off with `skein.agentSkills.install`.
 There are no release downloads yet. Build from source:
 [docs/build-linux.md](docs/build-linux.md) (tested),
 [docs/build-windows.md](docs/build-windows.md).
+
+Every switch above is a preference a skill can set; the full list is in
+[docs/customization-format.md](docs/customization-format.md).
 
 Then open `about:skein`, copy the customization folder path, start your agent
 in that folder and ask for a change.

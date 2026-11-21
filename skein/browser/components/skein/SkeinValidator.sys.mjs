@@ -322,6 +322,14 @@ export const ALLOWED_PREFS = {
   "layout.css.prefers-color-scheme.content-override": [0, 3],
   "skein.spaces.showLabels": "boolean",
   "skein.layout.toolbar.position": ["top", "bottom"],
+  "skein.ui.zen": "boolean",
+  "skein.ui.topSearchBar": "boolean",
+  "skein.ui.topBar": "boolean",
+  "skein.ui.tabCloseButton": ["hover", "always", "never"],
+  "skein.focus.compact": "boolean",
+  "skein.focus.sidebarHidden": "boolean",
+  "skein.focus.floatingNewTab": "boolean",
+  "skein.glance.altClick": "boolean",
 };
 // Deliberately absent: browser.urlbar.trimURLs and anything else that changes
 // how the address is displayed.

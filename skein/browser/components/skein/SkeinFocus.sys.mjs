@@ -14,7 +14,7 @@
  *    stray "New Tab" entry in the sidebar
  *  - Glance: open a link in a floating card from the link context menu;
  *    "Open as tab" keeps it, Esc or Close returns to the page
- *  - shortcuts (Ctrl+Alt+C compact, Ctrl+Alt+B sidebar); Ctrl+Tab switching
+ *  - shortcuts (Ctrl+Alt+C compact, Ctrl+Alt+B sidebar, Ctrl+Alt+V split); Ctrl+Tab switching
  *    in recently-used order is a default pref (firefox-branding.js)
  */
 
@@ -63,6 +63,7 @@ export const SkeinFocus = {
     this._initGlance(win);
     this._initLayout(win);
     this._initEmptyState(win);
+    this._initTopBar(win);
     if (!Services.prefs.getBoolPref("skein.focus.toolbarOrder", false)) {
       Services.prefs.setBoolPref("skein.focus.toolbarOrder", true);
       const CUI = win.CustomizableUI;
@@ -151,6 +152,9 @@ export const SkeinFocus = {
     const doc = win.document;
     const open = win.gBrowser.selectedTab.hasAttribute("skein-glance");
     doc.documentElement.toggleAttribute("skein-glance-open", open);
+    for (const t of win.gBrowser.tabs) {
+      t.toggleAttribute("skein-glance-opener", open && t === win.gBrowser.selectedTab._skeinGlanceOpener);
+    }
     let bar = doc.getElementById("skein-glance-bar");
     if (open && !bar) {
       const H = tag => doc.createElementNS("http://www.w3.org/1999/xhtml", tag);
@@ -198,6 +202,37 @@ export const SkeinFocus = {
       home.parent.insertBefore(navbar, home.next);
     }
     doc.documentElement.toggleAttribute("skein-sidebar-toolbar", inSidebar);
+  },
+
+  /**
+   * Top bar, like Zen's: hidden until the pointer reaches the top edge of the
+   * window. It is a drag handle for the window and holds the window buttons,
+   * which tiling desktops (Hyprland) and the sidebar layout otherwise lack.
+   */
+  _initTopBar(win) {
+    const doc = win.document;
+    const H = tag => doc.createElementNS("http://www.w3.org/1999/xhtml", tag);
+    const bar = H("div");
+    bar.id = "skein-topbar";
+    const drag = H("div");
+    drag.className = "skein-topbar-drag";
+    drag.addEventListener("dblclick", () => toggleMaximize());
+    const buttons = H("div");
+    buttons.className = "skein-topbar-buttons";
+    const toggleMaximize = () => (win.windowState === win.STATE_MAXIMIZED ? win.restore() : win.maximize());
+    const add = (cls, label, fn) => {
+      const b = H("button");
+      b.className = cls;
+      b.title = label;
+      b.setAttribute("aria-label", label);
+      b.addEventListener("click", fn);
+      buttons.append(b);
+    };
+    add("skein-win-min", "Minimize", () => win.minimize());
+    add("skein-win-max", "Maximize", toggleMaximize);
+    add("skein-win-close", "Close window", e => win.BrowserCommands.tryToCloseWindow(e));
+    bar.append(drag, buttons);
+    doc.documentElement.append(bar);
   },
 
   _initEmptyState(win) {
@@ -279,6 +314,8 @@ export const SkeinFocus = {
         togglePref(PREF_COMPACT);
       } else if (e.code === "KeyB") {
         togglePref(PREF_HIDE_SIDEBAR);
+      } else if (e.code === "KeyV") {
+        this.toggleSplit(win);
       } else {
         return;
       }
@@ -287,6 +324,28 @@ export const SkeinFocus = {
     }
     e.preventDefault();
     e.stopPropagation();
+  },
+
+  /**
+   * Ctrl+Alt+V: put the current tab side by side with the next tab (or a new
+   * one); pressing it again separates them. Uses Firefox's split view.
+   */
+  toggleSplit(win) {
+    const gBrowser = win.gBrowser;
+    const tab = gBrowser.selectedTab;
+    if (tab.splitview) {
+      tab.splitview.unsplitTabs();
+      return;
+    }
+    if (tab.pinned || typeof gBrowser.addTabSplitView !== "function") {
+      return;
+    }
+    const tabs = gBrowser.visibleTabs.filter(t => !t.pinned && !t.splitview && !t.hasAttribute("skein-glance"));
+    let other = tabs[tabs.indexOf(tab) + 1] || tabs[tabs.indexOf(tab) - 1];
+    if (!other) {
+      other = gBrowser.addTrustedTab("about:newtab", { relatedToCurrent: true });
+    }
+    gBrowser.addTabSplitView([tab, other], { insertBefore: tab });
   },
 
   /**

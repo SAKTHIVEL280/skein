@@ -92,6 +92,20 @@ Only interface preferences on the allowlist in `SkeinValidator.sys.mjs`
 and devtools preferences are never settable from a skill. When a skill is
 disabled or rolled back, Skein restores the previous value.
 
+Skein's own interface switches, all settable from a skill:
+
+| Preference | Values | Default | What it does |
+|---|---|---|---|
+| `skein.ui.zen` | true / false | true | Zen-style layout (sidebar, floating page card) |
+| `skein.ui.topSearchBar` | true / false | false | Put the address bar back in a classic top toolbar |
+| `skein.ui.topBar` | true / false | true | Hover top bar with the window buttons (minimize, maximize, close) |
+| `skein.ui.tabCloseButton` | `"hover"` / `"always"` / `"never"` | `"hover"` | When the tab close button (right side) shows |
+| `skein.focus.compact` | true / false | false | Compact mode: sidebar slides away, returns at the left edge |
+| `skein.focus.sidebarHidden` | true / false | false | Hide only the sidebar |
+| `skein.focus.floatingNewTab` | true / false | true | New tab floats the address bar instead of opening a page |
+| `skein.glance.altClick` | true / false | true | Alt+click a link opens it in Glance |
+| `skein.spaces.showLabels` | true / false | false | Show every space's full name in the switcher |
+
 ### keybindings.json
 
 ```json

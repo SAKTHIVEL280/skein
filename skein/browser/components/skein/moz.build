@@ -8,6 +8,8 @@ MOZ_SRC_FILES += [
     "SkeinAgentDocs.sys.mjs",
     "SkeinCustomization.sys.mjs",
     "SkeinFocus.sys.mjs",
+    "SkeinGlanceChild.sys.mjs",
+    "SkeinGlanceParent.sys.mjs",
     "SkeinGlue.sys.mjs",
     "SkeinPrivacy.sys.mjs",
     "SkeinSpaces.sys.mjs",

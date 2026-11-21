@@ -429,19 +429,64 @@ def main():
         r = b.chrome("let c = document.getElementById('sidebar-container').getBoundingClientRect(); return [Math.round(c.right), getComputedStyle(gURLBar).opacity]")
         b.chrome("Services.prefs.setBoolPref('skein.focus.compact', false)")
         check("focus: compact mode slides the whole sidebar, toolbar included, off screen", r[0] <= 8 and r[1] == "0", str(r))
+        r = b.chrome("const t = gBrowser.selectedTab; return getComputedStyle(t.querySelector('.tab-close-button')).visibility")
+        check("tabs: close button is hidden until hover (Zen)", r == "hidden", r)
+        r = b.chrome("const bar = document.getElementById('skein-topbar'); return [!!bar, Math.round(bar.getBoundingClientRect().bottom) <= 6, bar.querySelectorAll('button').length]")
+        check("top bar: present, tucked away until hover, with three window buttons", r == [True, True, 3], str(r))
+        b.chrome("const {SkeinFocus} = ChromeUtils.importESModule('moz-src:///browser/components/skein/SkeinFocus.sys.mjs'); gBrowser.addTrustedTab('about:robots'); SkeinFocus.toggleSplit(window)")
+        time.sleep(1)
+        r = b.chrome("return [!!gBrowser.selectedTab.splitview, gBrowser.tabpanels.hasAttribute('splitview')]")
+        b.chrome("const {SkeinFocus} = ChromeUtils.importESModule('moz-src:///browser/components/skein/SkeinFocus.sys.mjs'); SkeinFocus.toggleSplit(window)")
+        time.sleep(0.5)
+        r2 = b.chrome("return !!gBrowser.selectedTab.splitview")
+        check("split view: Ctrl+Alt+V splits the tab and separates it again", r == [True, True] and r2 is False, f"{r} {r2}")
+        S = "const {SkeinSpaces} = ChromeUtils.importESModule('moz-src:///browser/components/skein/SkeinSpaces.sys.mjs');"
+        r = b.chrome(S + """
+          const P = Services.scriptSecurityManager.getSystemPrincipal();
+          const home = SkeinSpaces.activeSpace(window).id;
+          const ess = gBrowser.addTab('about:logo', {triggeringPrincipal: P}); gBrowser.pinTab(ess);
+          const other = SkeinSpaces.createSpace('Second');
+          SkeinSpaces.switchTo(window, other.id);
+          const hiddenInOther = getComputedStyle(ess).display === 'none';
+          SkeinSpaces.switchTo(window, home);
+          const shownAtHome = getComputedStyle(ess).display !== 'none';
+          SkeinSpaces.deleteSpace(other.id);
+          return [hiddenInOther, shownAtHome];""")
+        check("spaces: Essentials belong to their space", r == [True, True], str(r))
         b.chrome("Services.prefs.setBoolPref('skein.ui.topSearchBar', true)")
         time.sleep(0.5)
         r = b.chrome("return document.getElementById('nav-bar').parentNode.id")
         b.chrome("Services.prefs.setBoolPref('skein.ui.topSearchBar', false)")
         check("focus: skein.ui.topSearchBar puts the address bar back on top", r == "navigator-toolbox", str(r))
+        import http.server, threading
+        www = os.path.join(TMP, "www"); os.makedirs(www, exist_ok=True)
+        open(os.path.join(www, "index.html"), "w").write('<a id="l" href="/two.html" style="display:block;font-size:40px">Link</a>')
+        open(os.path.join(www, "two.html"), "w").write("<h1>two</h1>")
+        handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(*a, directory=www, **k)
+        httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        threading.Thread(target=httpd.serve_forever, daemon=True).start()
+        port = httpd.server_address[1]
+        b.chrome(f"gBrowser.selectedTab = gBrowser.addTab('http://127.0.0.1:{port}/', {{triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal()}})")
+        time.sleep(2)
+        b.chrome("""const r = gBrowser.selectedBrowser.getBoundingClientRect(); const x = r.left + 30, y = r.top + 30;
+          const o = {isDOMEventSynthesized: false, isAsyncEnabled: true};
+          window.synthesizeMouseEvent('mousemove', x, y, {}, o);
+          window.synthesizeMouseEvent('mousedown', x, y, {button: 0, clickCount: 1, modifiers: Event.ALT_MASK}, o);
+          window.synthesizeMouseEvent('mouseup', x, y, {button: 0, clickCount: 1, modifiers: Event.ALT_MASK}, o);""")
+        time.sleep(2)
+        r = b.chrome("return [document.documentElement.hasAttribute('skein-glance-open'), gBrowser.selectedBrowser.currentURI.spec.endsWith('/two.html')]")
+        check("glance: Alt+click on a web link opens it in Glance", r == [True, True], str(r))
+        b.chrome("ChromeUtils.importESModule('moz-src:///browser/components/skein/SkeinFocus.sys.mjs').SkeinFocus.closeGlance(window)")
+        httpd.shutdown()
         G = "const {SkeinFocus} = ChromeUtils.importESModule('moz-src:///browser/components/skein/SkeinFocus.sys.mjs'); const sys = Services.scriptSecurityManager.getSystemPrincipal();"
+        before = b.chrome("return gBrowser.tabs.length")
         b.chrome(G + "SkeinFocus.openGlance(window, 'about:robots', sys)")
         time.sleep(2)
         r1 = b.chrome("return [document.documentElement.hasAttribute('skein-glance-open'), gBrowser.selectedBrowser.currentURI.spec, !!document.getElementById('skein-context-glance')]")
         b.chrome(G + "SkeinFocus.closeGlance(window)")
         time.sleep(1)
         r2 = b.chrome("return [document.documentElement.hasAttribute('skein-glance-open'), gBrowser.tabs.length]")
-        check("focus: Glance opens a link in a floating card and Esc/Close returns", r1 == [True, "about:robots", True] and r2 == [False, 1], str([r1, r2]))
+        check("focus: Glance opens a link in a floating card and Esc/Close returns", r1 == [True, "about:robots", True] and r2 == [False, before], str([r1, r2]))
         r = b.chrome("return Services.prefs.getBoolPref('browser.ctrlTab.sortByRecentlyUsed')")
         check("focus: Ctrl+Tab uses recently-used order", r is True, str(r))
 

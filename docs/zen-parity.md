@@ -19,7 +19,11 @@ Each "done" item is covered by `scripts/dev/test_skein.py` unless noted.
 | Essentials (pinned tiles) | Pinned tabs shown as a tile grid; drag a tab up to pin it | drag, or right-click → Pin |
 | Close the last tab | Window stays open and shows an empty home page; no stray "New Tab" in the sidebar | `browser.tabs.closeWindowWithLastTab` (false) |
 | Recent-tab switching | Quick `Ctrl+Tab` flips to the last tab; hold to see all tabs | `browser.ctrlTab.sortByRecentlyUsed` |
-| Glance | Right-click a link → Open in Glance: floating card over a dimmed page; Open as tab / Close / Esc | context menu |
+| Glance | Alt+click or right-click → Open in Glance: floating card over a dimmed page; Open as tab / Close / Esc | `skein.glance.altClick` |
+| Split view | Firefox's split view with each page as a card | `Ctrl+Alt+V`, tab menu |
+| Essentials per space | Pinned tabs belong to the space they were pinned in | — |
+| Tab close on hover | Close button on the right, shown on hover | `skein.ui.tabCloseButton` |
+| Hover top bar | Slides down at the top edge; window buttons and drag area | `skein.ui.topBar` |
 | Workspaces | Skein Spaces, at the bottom of the sidebar like Zen; never pushed into the >> menu | Spaces widget |
 
 ## Better than Zen
@@ -34,7 +38,6 @@ Each "done" item is covered by `scripts/dev/test_skein.py` unless noted.
 
 ## Next
 
-- Split view (two pages side by side).
-- Per-space Essentials (Zen keeps Essentials per container).
-- Glance on Alt+click (today it is in the link context menu).
-- Move the window buttons out of the sidebar on Windows when the toolbar is there.
+- Drag tabs between spaces by dropping them on a space dot.
+- Space icons (emoji) in addition to colours.
+- Verify every animation on Windows hardware (only tested on Linux so far).
